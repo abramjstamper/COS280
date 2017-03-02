@@ -16,11 +16,11 @@
 
 (defun printBoard (board)
   (format t "~%")
-  (printRow (nth 1 board) (nth 2 board) (nth 3 board))
+  (printRow (nth 0 board) (nth 1 board) (nth 2 board))
   (format t "~& -----------")
-  (printRow (nth 4 board) (nth 5 board) (nth 6 board))
+  (printRow (nth 3 board) (nth 4 board) (nth 5 board))
   (format t "~& -----------")
-  (printRow (nth 7 board) (nth 8 board) (nth 9 board))
+  (printRow (nth 6 board) (nth 7 board) (nth 8 board))
   (format t "~%~%") )
 
 (defun printRow (first middle last)
@@ -49,8 +49,8 @@
   (setq humanHadFirstMove (determineWhoGoesFirst))
   (setq board (createNewBoard))
 
-  (format t "~d" (getUserMove "computer"))
 
+  (printBoard (board))
 
 )
 
