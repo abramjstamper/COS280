@@ -77,7 +77,8 @@
       ((checkRowValues 1 4 7) nil)
       ((checkRowValues 2 5 8) nil)
       ((checkRowValues 0 4 8) nil)
-      ((checkRowValues 2 4 6) nil)       
+      ((checkRowValues 2 4 6) nil)
+      ((member "U" board ) nil)    
       (t t)
     )
 )
@@ -85,13 +86,12 @@
 (defun isCurrentMoveInvalid? (move) 
   (cond
     ((and (<= move 8) (>= move 0)) nil)
-    ((and (> move 8) (< move 0)) t)
+    ((and (> move 8) (< move 0)) 
+      (format t "Move ~d was invalid~%")
+    t
+    )
     ((eql move -100) t)                 ; edge case to get through while loop once
   )
-)
-
-(defun gameLogic (board currentPlayer)
-  board
 )
 
 (defun gameLogic (board currentPlayer)
@@ -100,9 +100,7 @@
     do
       (if currentPlayer
         (setq currentMove (getHumanMove (getPlayerString currentPlayer)))
-        (setq currentMove (getComputerMove) ))
-        (format t "I made it inside") )
-  (format t "I made it outside")
+        (setq currentMove (getComputerMove) )))
   (setf (nth currentMove board) (getPlayerAbbr currentPlayer))
   board )
 
@@ -120,6 +118,9 @@
       (printBoard board)
 
       (setq humanMove (togglePlayer humanMove)) )
+
+  (format t (concatenate 'string (string-upcase (getPlayerString (not humanMove))) " WINS!"))
+  (quit)
 )
 
 (main)
