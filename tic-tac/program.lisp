@@ -85,20 +85,28 @@
     )
 )
 
-(defun isCurrentMoveInvalid? (move) 
+(defun isCurrentMoveInvalid?Helper (move board)
+  (cond 
+      ((string= "X" (nth move board)) t)
+      ((string= "O" (nth move board)) t)
+      (t nil)
+  )
+)
+
+(defun isCurrentMoveInvalid? (move board) 
   (cond
     ((and (<= move 8) (>= move 0)) nil)
     ((and (> move 8) (< move 0)) 
       (format t "Move ~d was invalid~%")
-    t
     )
+    ((isCurrentMoveInvalid?Helper move board) nil)
     ((eql move -100) t)                 ; edge case to get through while loop once
   )
 )
 
 (defun gameLogic (board currentPlayer)
   (setq currentMove -100)
-  (loop while (isCurrentMoveInvalid? currentMove)
+  (loop while (isCurrentMoveInvalid? currentMove board)
     do
       (if currentPlayer
         (setq currentMove (getHumanMove (getPlayerString currentPlayer)))
