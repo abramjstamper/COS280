@@ -16,7 +16,7 @@
 )
 
 (defun createNewBoard ()
-  (list "U" "U" "U" "U" "U" "U" "U" "U" "U") )
+  (list "H" "H" "U" "U" "U" "U" "U" "U" "U") )
 
 (defun printBoard (board)
   (format t "~%")
@@ -61,9 +61,26 @@
     nil
     t ))
 
-(defun gameOver? (board)
+(defun checkRowValues (first middle third)
+    (if (or (string= "U" (nth first board)) (string= "U" (nth middle board)) (string= "U" (nth third board)))
+      nil
+      (and (string= (nth first board) (nth middle board)) (string= (nth middle board) (nth third board)))
+    )
+)
 
-t)
+(defun gameOver? (board)
+    (cond 
+      ((checkRowValues 0 1 2) nil)
+      ((checkRowValues 3 4 5) nil)
+      ((checkRowValues 6 7 8) nil)
+      ((checkRowValues 0 3 6) nil)
+      ((checkRowValues 1 4 7) nil)
+      ((checkRowValues 2 5 8) nil)
+      ((checkRowValues 0 4 8) nil)
+      ((checkRowValues 2 4 6) nil)       
+      (t t)
+    )
+)
 
 (defun isCurrentMoveInvalid? (move) 
   (cond
@@ -71,6 +88,10 @@ t)
     ((and (> move 8) (< move 0)) t)
     ((eql move -100) t)                 ; edge case to get through while loop once
   )
+)
+
+(defun gameLogic (board currentPlayer)
+  board
 )
 
 (defun gameLogic (board currentPlayer)
