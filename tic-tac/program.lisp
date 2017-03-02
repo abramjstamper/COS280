@@ -1,3 +1,5 @@
+(setf *random-state* (make-random-state t))
+
 (defun getHumanMove (playerString)
   (format t "Enter a board position (0-8): ")
   (let ((userIO (read)))
@@ -12,11 +14,11 @@
         (quit) ))))
 
 (defun getComputerMove ()
-0
+(random 8)
 )
 
 (defun createNewBoard ()
-  (list "H" "H" "U" "U" "U" "U" "U" "U" "U") )
+  (list "U" "U" "U" "U" "U" "U" "U" "U" "U") )
 
 (defun printBoard (board)
   (format t "~%")
