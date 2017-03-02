@@ -7,29 +7,22 @@
       (format t "That was not a number or active board position.") )))
 
 (defun createNewBoard ()
-  (list 'board 0 0 0 0 0 0 0 0 0) )
+  (list 'board "U" "U" "U" "U" "U" "U" "U" "U" "U") )
 
-(defun print-board (board)
+(defun printBoard (board)
   (format t "~%")
   (print-row (nth 1 board) (nth 2 board) (nth 3 board))
   (format t "~& -----------")
   (print-row (nth 4 board) (nth 5 board) (nth 6 board))
   (format t "~& -----------")
   (print-row (nth 7 board) (nth 8 board) (nth 9 board))
-  (format t "~%~%"))
+  (format t "~%~%") )
 
-
-(defun print-row (x y z)
-  (format t "~&  ~A | ~A | ~A"
-          (convert-to-letter x)
-          (convert-to-letter y)
-          (convert-to-letter z)))
-
-(defun convert-to-letter (v)
-  (cond ((eql v 1) "O")
-        ((eql v 10) "X")
-        (t " ")))
-
+(defun printRow (first middle last)
+  (format t "~&  ~a | ~a | ~a"
+          (convert-to-letter first)
+          (convert-to-letter middle)
+          (convert-to-letter last) ))
 
 (defun determineWhoGoesFirst ()
   (format t "Would you like to go first? Y or N: ")
@@ -54,9 +47,7 @@
   (format t "Prepare to lose!~%~%")
   (setq humanHadFirstMove (determineWhoGoesFirst))
 
-  (format t "~%~a" humanHadFirstMove)
-
-  (print-board (createNewBoard))
+  ;(print-board (createNewBoard))
 
 
 )
