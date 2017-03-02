@@ -24,10 +24,7 @@
   (format t "~%~%") )
 
 (defun printRow (first middle last)
-  (format t "~&  ~a | ~a | ~a"
-          (convert-to-letter first)
-          (convert-to-letter middle)
-          (convert-to-letter last) ))
+  (format t "~&  ~A | ~A | ~A" first middle last))
 
 (defun determineWhoGoesFirst ()
   (format t "Would you like to go first? Y or N: ")
