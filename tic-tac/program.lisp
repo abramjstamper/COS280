@@ -2,12 +2,17 @@
   (format t (concatenate 'string playerString " player turn!~%"))
   (format t "Enter a board position (0-8): ")
   (let ((userIO (read)))
-    (if (and (numberp userIO) (and (<= userIO 8) (>= userIO 0)))
-      (format t "You entered ~d.~%" userIO)
-      (format t "That was not a number or active board position.") )))
+    (cond
+      ((and (numberp userIO) (and (<= userIO 8) (>= userIO 0)))
+        (format t "You entered ~d.~%" userIO) 
+        userIO
+      )
+      ((and (numberp userIO) (and (>= userIO 8) (<= userIO 0)))
+        (format t "That was not a number or active board position.")
+        (quit) ))))
 
 (defun createNewBoard ()
-  (list 'board "U" "U" "U" "U" "U" "U" "U" "U" "U") )
+  (list "U" "U" "U" "U" "U" "U" "U" "U" "U") )
 
 (defun printBoard (board)
   (format t "~%")
@@ -32,22 +37,22 @@
       (format t "~%That was invalid input!")
       (quit))
     ((string= userIO "Y")
-      (format t "~%Human! You are going first!")
+      (format t "~%Human! You are going first!~%")
       t
     )
     ((string= userIO "N")
-      (format t "~%YAY! I am going first and am going to beat you!")
+      (format t "~%YAY! I am going first and am going to beat you!~%")
       nil
-    )
-    ))
-  )
+    ) )) )
 
 (defun main ()
   (format t "~%WELCOME TO ABRAM AND ANDREW'S TIC TAC TOE GAME!~%~%")
   (format t "Prepare to lose!~%~%")
-  (setq humanHadFirstMove (determineWhoGoesFirst))
-
   
+  (setq humanHadFirstMove (determineWhoGoesFirst))
+  (setq board (createNewBoard))
+
+  (format t "~d" (getUserMove "computer"))
 
 
 )
