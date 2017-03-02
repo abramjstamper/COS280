@@ -95,11 +95,15 @@
 
 (defun isCurrentMoveInvalid? (move board) 
   (cond
-    ((and (<= move 8) (>= move 0)) nil)
-    ((and (> move 8) (< move 0)) 
-      (format t "Move ~d was invalid~%")
-    )
-    ((isCurrentMoveInvalid?Helper move board) nil)
+    ((and (<= move 8) (>= move 0)) 
+    (cond
+        ((isCurrentMoveInvalid?Helper move board)
+        (format t "Move ~d was invalid~%" move)
+        t)
+      ((not (isCurrentMoveInvalid?Helper move board))
+        nil)
+      ))
+    ((and (> move 8) (< move 0)) t)   
     ((eql move -100) t)                 ; edge case to get through while loop once
   )
 )
