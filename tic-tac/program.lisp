@@ -50,7 +50,7 @@
   (setq board (createNewBoard))
 
 
-  (printBoard (board))
+  (printBoard board)
 
 )
 
