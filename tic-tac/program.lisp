@@ -9,6 +9,7 @@
       )
       ((and (numberp userIO) (and (>= userIO 8) (<= userIO 0)))
         (format t "That was not a number or active board position.")
+        (format t "You failed to provide valid input. I win!")
         (quit) ))))
 
 (defun createNewBoard ()
