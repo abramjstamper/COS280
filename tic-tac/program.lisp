@@ -1,5 +1,4 @@
-(defun getUserMove (playerString)
-  (format t (concatenate 'string playerString " player turn!~%"))
+(defun getHumanMove (playerString)
   (format t "Enter a board position (0-8): ")
   (let ((userIO (read)))
     (cond
@@ -11,6 +10,10 @@
         (format t "That was not a number or active board position.")
         (format t "You failed to provide valid input. I win!")
         (quit) ))))
+
+(defun getComputerMove ()
+0
+)
 
 (defun createNewBoard ()
   (list "U" "U" "U" "U" "U" "U" "U" "U" "U") )
@@ -43,17 +46,44 @@
       nil
     ) )) )
 
+(defun getPlayerString (currentPlayer)
+  (if currentPlayer
+    "Human"
+    "Computer"))
+
+(defun getPlayerAbbr (currentPlayer)
+  (if currentPlayer
+    "X"
+    "O"))
+
 (defun togglePlayer (player)
   (if player
     nil
     t ))
 
 (defun gameOver? (board)
+
 t)
 
-(defun gameLogic (board currentPlayer)
-
+(defun isCurrentMoveInvalid? (move) 
+  (cond
+    ((and (<= move 8) (>= move 0)) nil)
+    ((and (> move 8) (< move 0)) t)
+    ((eql move -100) t)                 ; edge case to get through while loop once
+  )
 )
+
+(defun gameLogic (board currentPlayer)
+  (setq currentMove -100)
+  (loop while (isCurrentMoveInvalid? currentMove)
+    do
+      (if currentPlayer
+        (setq currentMove (getHumanMove (getPlayerString currentPlayer)))
+        (setq currentMove (getComputerMove) ))
+        (format t "I made it inside") )
+  (format t "I made it outside")
+  (setf (nth currentMove board) (getPlayerAbbr currentPlayer))
+  board )
 
 (defun main ()
   (format t "~%WELCOME TO ABRAM AND ANDREW'S TIC TAC TOE GAME!~%~%")
@@ -62,9 +92,9 @@ t)
   (setq humanMove (determineWhoGoesFirst))
   (setq board (createNewBoard))
 
-  ; loop while winCondition is false
   (loop while (gameOver? board)
     do
+      (format t (concatenate 'string "Player " (getPlayerString humanMove) " turn!~%"))
       (setq board (gameLogic board humanMove))
       (printBoard board)
 
