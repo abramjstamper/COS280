@@ -9,6 +9,28 @@
 (defun createNewBoard ()
   (list 'board 0 0 0 0 0 0 0 0 0) )
 
+(defun print-board (board)
+  (format t "~%")
+  (print-row (nth 1 board) (nth 2 board) (nth 3 board))
+  (format t "~& -----------")
+  (print-row (nth 4 board) (nth 5 board) (nth 6 board))
+  (format t "~& -----------")
+  (print-row (nth 7 board) (nth 8 board) (nth 9 board))
+  (format t "~%~%"))
+
+
+(defun print-row (x y z)
+  (format t "~&  ~A | ~A | ~A"
+          (convert-to-letter x)
+          (convert-to-letter y)
+          (convert-to-letter z)))
+
+(defun convert-to-letter (v)
+  (cond ((eql v 1) "O")
+        ((eql v 10) "X")
+        (t " ")))
+
+
 (defun determineWhoGoesFirst ()
   (format t "Would you like to go first? Y or N: ")
   (let ((userIO (read)))
@@ -33,6 +55,8 @@
   (setq humanHadFirstMove (determineWhoGoesFirst))
 
   (format t "~%~a" humanHadFirstMove)
+
+  (print-board (createNewBoard))
 
 
 )
