@@ -43,16 +43,32 @@
       nil
     ) )) )
 
+(defun togglePlayer (player)
+  (if player
+    nil
+    t ))
+
+(defun gameOver? (board)
+t)
+
+(defun gameLogic (board currentPlayer)
+
+)
+
 (defun main ()
   (format t "~%WELCOME TO ABRAM AND ANDREW'S TIC TAC TOE GAME!~%~%")
   (format t "Prepare to lose!~%~%")
   
-  (setq humanHadFirstMove (determineWhoGoesFirst))
+  (setq humanMove (determineWhoGoesFirst))
   (setq board (createNewBoard))
 
+  ; loop while winCondition is false
+  (loop while (gameOver? board)
+    do
+      (setq board (gameLogic board humanMove))
+      (printBoard board)
 
-  (printBoard board)
-
+      (setq humanMove (togglePlayer humanMove)) )
 )
 
 (main)
