@@ -122,7 +122,7 @@
     )
 )
 
-(defun gameOver? (board)
+(defun gameOver? (board currentMove)
     (cond 
       ((checkRowValues 0 1 2) nil)
       ((checkRowValues 3 4 5) nil)
@@ -132,7 +132,7 @@
       ((checkRowValues 2 5 8) nil)
       ((checkRowValues 0 4 8) nil)
       ((checkRowValues 2 4 6) nil)
-      ((member "U" board ) nil)    
+      ((eql 9 moveCount ) nil)    
       (t t)
     )
 )
@@ -179,7 +179,7 @@
   (setq board (createNewBoard))
   (setq moveCount 0)
 
-  (loop while (gameOver? board)
+  (loop while (gameOver? board moveCount)
     do
       (format t (concatenate 'string "Player " (getPlayerString humanMove) " turn!~%"))
       (setq board (gameLogic board humanMove))
@@ -194,4 +194,4 @@
   (quit)
 )
 
-(main)
+(defun tic-tac-toe () (main))
