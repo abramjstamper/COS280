@@ -1,17 +1,27 @@
 (setf *random-state* (make-random-state t))
 
-(defun getHumanMove (playerString)
-  (format t "Enter a board position (0-8): ")
+(defun readInFromStandardIn (stringForLocation)
+  (format t (concatenate 'string "Enter a " stringForLocation " position (0-2): "))
   (let ((userIO (read)))
     (cond
-      ((and (numberp userIO) (and (<= userIO 8) (>= userIO 0)))
+      ((and (numberp userIO) (and (<= userIO 2) (>= userIO 0)))
         (format t "You entered ~d.~%" userIO) 
         userIO
       )
-      ((and (numberp userIO) (and (>= userIO 8) (<= userIO 0)))
-        (format t "That was not a number or active board position.")
+      ((and (numberp userIO) (and (>= userIO 2) (<= userIO 0)))
+        (format t (concatenate 'string "That was not a number or active " stringForLocation " position.")
         (format t "You failed to provide valid input. I win!")
         (quit) ))))
+)
+
+(defun getHumanMove (playerString)
+  (setq row (readInFromStandardIn "row"))
+  (setq col (readInFromStandardIn "col"))
+  ;; (format t "convertToSingle: ~d ~d = ~d~%" row col (convertToSingle row col))
+  (convertToSingle row col)
+)
+
+(defun convertToSingle (row col) (+ (* row 3) col))
 
 
 (defun canAIWinNow?Helper (first second third) 
