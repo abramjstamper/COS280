@@ -59,16 +59,10 @@
     )
 )
 
-;;Original getComputerMove
-;; (defun getComputerMove ()
-;;     (random 8)
-;; )
-
-
 (defun getComputerMove ()
   (setq winningMove? (canAIWinNow? board))
-  (print "winningMove")
-  (print winningMove?)
+  ;; (print "winningMove")
+  ;; (print winningMove?)
   (if (eql winningMove? nil)
     (random 8)
     winningMove?
@@ -183,6 +177,7 @@
   
   (setq humanMove (determineWhoGoesFirst))
   (setq board (createNewBoard))
+  (setq moveCount 0)
 
   (loop while (gameOver? board)
     do
@@ -190,9 +185,12 @@
       (setq board (gameLogic board humanMove))
       (printBoard board)
 
+      (setq moveCount (+ moveCount 1))
       (setq humanMove (togglePlayer humanMove)) )
 
-  (format t (concatenate 'string (string-upcase (getPlayerString (not humanMove))) " WINS!"))
+  (if (eql moveCount 9)
+    (format t "DRAW!~%")
+    (format t (concatenate 'string (string-upcase (getPlayerString (not humanMove))) " WINS!~%")) )
   (quit)
 )
 
