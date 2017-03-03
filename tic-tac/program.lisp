@@ -13,8 +13,66 @@
         (format t "You failed to provide valid input. I win!")
         (quit) ))))
 
+
+(defun canAIWinNow?Helper (first second third) 
+    (cond 
+      ((and (string= "O" (nth first board)) (string= "U" (nth second board))(string= "O" (nth third board))) t)
+      (t nil)
+    )
+)
+
+(defun canAIWinNow? (board)
+    (cond 
+      ;;Top Row
+      ((canAIWinNow?Helper 0 2 1) 2)
+      ((canAIWinNow?Helper 1 0 2) 0)
+      ((canAIWinNow?Helper 0 1 2) 1)
+      ;;Middle Horizontal Row
+      ((canAIWinNow?Helper 3 5 4) 5)
+      ((canAIWinNow?Helper 4 3 5) 3)
+      ((canAIWinNow?Helper 3 4 5) 4)
+      ;;Bottom Row
+      ((canAIWinNow?Helper 6 8 7) 8)
+      ((canAIWinNow?Helper 7 6 8) 6)
+      ((canAIWinNow?Helper 6 7 8) 7)
+      ;;Far Left Row
+      ((canAIWinNow?Helper 0 3 6) 3)
+      ((canAIWinNow?Helper 3 0 6) 0)
+      ((canAIWinNow?Helper 0 6 3) 6)
+      ;;Middle Horizontal Row
+      ((canAIWinNow?Helper 1 4 7) 4)
+      ((canAIWinNow?Helper 4 1 7) 1)
+      ((canAIWinNow?Helper 1 7 4) 7)
+      ;;Far Right Row
+      ((canAIWinNow?Helper 2 5 8) 5)
+      ((canAIWinNow?Helper 2 8 5) 8)
+      ((canAIWinNow?Helper 5 2 8) 2)
+      ;;Left Diagnal
+      ((canAIWinNow?Helper 0 8 4) 8)
+      ((canAIWinNow?Helper 4 0 8) 0)
+      ((canAIWinNow?Helper 0 4 8) 4)
+      ;;Right Diagnal
+      ((canAIWinNow?Helper 2 6 4) 6)
+      ((canAIWinNow?Helper 4 2 6) 2)
+      ((canAIWinNow?Helper 2 4 6) 4)   
+      (t nil)
+    )
+)
+
+;;Original getComputerMove
+;; (defun getComputerMove ()
+;;     (random 8)
+;; )
+
+
 (defun getComputerMove ()
-(random 8)
+  (setq winningMove? (canAIWinNow? board))
+  (print "winningMove")
+  (print winningMove?)
+  (if (eql winningMove? nil)
+    (random 8)
+    winningMove?
+  )
 )
 
 (defun createNewBoard ()
