@@ -25,7 +25,7 @@
 // Include your player here
 
 //	Professor's contestants
-#include "DumbPlayerV2.h"
+#include "AIPlayer.h"
 #include "OrigGamblerPlayerV2.h"
 #include "LearningGambler2.h"
 
@@ -50,7 +50,7 @@ int winCount[NumPlayers];
 int statsShotsTaken[NumPlayers];
 int statsGamesCounted[NumPlayers];
 string playerNames[NumPlayers] = { 
-    "Dumb Player",
+    "AI Player",
     "Orig Gambler",
     "Learning Gambler",
 };
@@ -272,7 +272,7 @@ int comparePlayers (const void * a, const void * b) {
 PlayerV2* getPlayer( int playerId, int boardSize ) {
     switch( playerId ) {
 	default:       // use 'default' to avoid compiler warning
-	case 0: return new DumbPlayerV2( boardSize );
+	case 0: return new AIPlayer( boardSize );
 	case 1: return new OrigGamblerPlayerV2( boardSize );
 	case 2: return new LearningGambler2( boardSize );
     }
