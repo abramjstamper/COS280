@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
 
 #include "conio.h"
 #include "AIPlayer.h"
@@ -28,10 +29,15 @@ using namespace conio;
  * before any of the rounds happen. The constructor does not get called 
  * before rounds; newRound() gets called before every round.
  */
-AIPlayer::AIPlayer( int boardSize )
-    :PlayerV2(boardSize)
-{
-    // Could do any initialization of inter-round data structures here.
+AIPlayer::AIPlayer(int boardSize)
+        : PlayerV2(boardSize) {
+  // Could do any initialization of inter-round data structures here.
+  for (int row = 0; row < boardSize; row++) {
+    for (int col = 0; col < boardSize; col++) {
+      this->whereEnemyShotThisGame[row][col] = 0;
+    }
+  }
+
 }
 
 /**
@@ -39,17 +45,26 @@ AIPlayer::AIPlayer( int boardSize )
  * If your code does anything that requires cleanup when the object is
  * destroyed, do it here in the destructor.
  */
-AIPlayer::~AIPlayer( ) {}
+AIPlayer::~AIPlayer() {}
 
 /*
  * Private internal function that initializes a MAX_BOARD_SIZE 2D array of char to water.
  */
 void AIPlayer::initializeBoard() {
-    for(int row=0; row<boardSize; row++) {
-	for(int col=0; col<boardSize; col++) {
-	    this->board[row][col] = WATER;
-	}
+  for (int row = 0; row < boardSize; row++) {
+    for (int col = 0; col < boardSize; col++) {
+      this->board[row][col] = WATER;
+      this->whereEnemyShotThisRound[row][col] = 0;
     }
+  }
+}
+
+void AIPlayer::copyWhereEnemyShotThisRoundToThisGame(){
+  for(int i = 0; i < MAX_BOARD_SIZE; i++){
+    for(int j = 0; j < MAX_BOARD_SIZE; j++){
+      whereEnemyShotThisRound[i][j] += whereEnemyShotThisGame[i][j];
+    }
+  }
 }
 
 
@@ -62,18 +77,18 @@ void AIPlayer::initializeBoard() {
  * Message constructor.
  */
 Message AIPlayer::getMove() {
-    lastCol++;
-    if( lastCol >= boardSize ) {
-	lastCol = 0;
-	lastRow++;
-    }
-    if( lastRow >= boardSize ) {
-	lastCol = 0;
-	lastRow = 0;
-    }
+  lastCol++;
+  if (lastCol >= boardSize) {
+    lastCol = 0;
+    lastRow++;
+  }
+  if (lastRow >= boardSize) {
+    lastCol = 0;
+    lastRow = 0;
+  }
 
-    Message result( SHOT, lastRow, lastCol, "Bang", None, 1 );
-    return result;
+  Message result(SHOT, lastRow, lastCol, "Bang", None, 1);
+  return result;
 }
 
 /**
@@ -81,14 +96,14 @@ Message AIPlayer::getMove() {
  * The AI show reinitialize any intra-round data structures.
  */
 void AIPlayer::newRound() {
-    /* DumbPlayer is too simple to do any inter-round learning. Smarter players 
-     * reinitialize any round-specific data structures here.
-     */
-    this->lastRow = 0;
-    this->lastCol = -1;
-    this->numShipsPlaced = 0;
+  /* DumbPlayer is too simple to do any inter-round learning. Smarter players
+   * reinitialize any round-specific data structures here.
+   */
+  this->lastRow = 0;
+  this->lastCol = -1;
+  this->numShipsPlaced = 0;
 
-    this->initializeBoard();
+  this->initializeBoard();
 }
 
 /**
@@ -106,15 +121,28 @@ void AIPlayer::newRound() {
  * 6. ship length (should match the length passed to placeShip)
  */
 Message AIPlayer::placeShip(int length) {
-    char shipName[10];
-    // Create ship names each time called: Ship0, Ship1, Ship2, ...
-    snprintf(shipName, sizeof shipName, "Ship%d", numShipsPlaced);
+  char shipName[10];
+  bool invalidShipPlacement = true;
+  int row = 0;
+  int col = 0;
+  int horizontal = 0;
+  // Create ship names each time called: Ship0, Ship1, Ship2, ...
+  snprintf(shipName, sizeof shipName, "Ship%d", numShipsPlaced);
 
-    // parameters = mesg type (PLACE_SHIP), row, col, a string, direction (Horizontal/Vertical)
-    Message response( PLACE_SHIP, numShipsPlaced, 0, shipName, Horizontal, length );
-    numShipsPlaced++;
+  while(invalidShipPlacement){
+    row = random() % (MAX_BOARD_SIZE - length + 1);
+    col = random() % (MAX_BOARD_SIZE - length + 1);
+    horizontal = random() % 2 + 1;
+    if((row + length) < MAX_BOARD_SIZE && (col + length) < MAX_BOARD_SIZE){
+      invalidShipPlacement = false;
+    }
+  }
 
-    return response;
+  // parameters = mesg type (PLACE_SHIP), row, col, a string, direction (Horizontal/Vertical)
+  Message response(PLACE_SHIP, row, col, shipName, Direction(horizontal), length);
+  numShipsPlaced++;
+
+  return response;
 }
 
 /**
@@ -122,23 +150,22 @@ Message AIPlayer::placeShip(int length) {
  * @param msg Message specifying what happened + row/col as appropriate.
  */
 void AIPlayer::update(Message msg) {
-    switch(msg.getMessageType()) {
-	case HIT:
-	case KILL:
-	case MISS:
-	    board[msg.getRow()][msg.getCol()] = msg.getMessageType();
-	    break;
-	case WIN:
-	    break;
-	case LOSE:
-	    break;
-	case TIE:
-	    break;
-	case OPPONENT_SHOT:
-	    // TODO: get rid of the cout, but replace in your AI with code that does something
-	    // useful with the information about where the opponent is shooting.
-	    //cout << gotoRowCol(20, 30) << "DumbPl: opponent shot at "<< msg.getRow() << ", " << msg.getCol() << flush;
-	    break;
-    }
+  switch (msg.getMessageType()) {
+    case HIT:
+    case KILL:
+    case MISS:
+      board[msg.getRow()][msg.getCol()] = msg.getMessageType();
+      break;
+    case WIN:
+      break;
+    case LOSE:
+      break;
+    case TIE:
+      break;
+    case OPPONENT_SHOT:
+      whereEnemyShotThisRound[msg.getRow()][msg.getCol()] = 1;
+      break;
+  }
+  copyWhereEnemyShotThisRoundToThisGame();
 }
 

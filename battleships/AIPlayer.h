@@ -6,7 +6,7 @@
  *
  */
 
-#ifndef AIPLAYER_H		// Double inclusion protection
+#ifndef AIPLAYER_H    // Double inclusion protection
 #define AIPLAYER_H
 
 using namespace std;
@@ -17,21 +17,30 @@ using namespace std;
 
 // DumbPlayer inherits from/extends PlayerV2
 
-class AIPlayer: public PlayerV2 {
-    public:
-	AIPlayer( int boardSize );
-	~AIPlayer();
-	void newRound();
-	Message placeShip(int length);
-	Message getMove();
-	void update(Message msg);
+class AIPlayer : public PlayerV2 {
+public:
+    AIPlayer(int boardSize);
 
-    private:
-	void initializeBoard();
-        int lastRow;
-        int lastCol;
-	int numShipsPlaced;
-        char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    ~AIPlayer();
+
+    void newRound();
+
+    Message placeShip(int length);
+
+    Message getMove();
+
+    void update(Message msg);
+
+private:
+    void initializeBoard();
+    void copyWhereEnemyShotThisRoundToThisGame();
+    int lastRow;
+    int lastCol;
+    int numShipsPlaced;
+    int whereEnemyShotThisRound[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    int whereEnemyShotThisGame[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    char myShipBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
 };
 
 #endif
