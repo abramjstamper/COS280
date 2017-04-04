@@ -34,6 +34,8 @@ public:
 private:
     void initializeBoard();
     void copyWhereEnemyShotThisRoundToThisGame();
+    bool canPlaceShip(int row, int col, int direction, int length);
+    void markShip(int row, int col, int direction, int length);
     int lastRow;
     int lastCol;
     int numShipsPlaced;
