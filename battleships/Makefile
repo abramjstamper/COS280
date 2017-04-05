@@ -1,4 +1,4 @@
-CXXFLAGS = -g -Wall -O2
+CXXFLAGS = -Og -Wall -O2
 CXX = g++
 
 CONTESTOBJECTS = AIContest.o BoardV3.o Message.o PlayerV2.o conio.o contest.o \
