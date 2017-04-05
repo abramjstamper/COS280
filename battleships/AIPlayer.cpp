@@ -122,20 +122,20 @@ void AIPlayer::newRound() {
  */
 bool AIPlayer::canPlaceShip(int row, int col, int direction, int length) {
   if (direction == 1) {
-    if ((row + length) > MAX_BOARD_SIZE) {
-      return false;
-    } else {
-      for (int i = 0; i < length; i++) {
-        if (this->myShipBoard[i][col] == SHIP)
-          return false;
-      }
-    }
-  } else {
-    if ((col + length) > MAX_BOARD_SIZE) {
+    if ((col + length) >= MAX_BOARD_SIZE) {
       return false;
     } else {
       for (int i = 0; i < length; i++) {
         if (this->myShipBoard[row][i] == SHIP)
+          return false;
+      }
+    }
+  } else {
+    if ((row + length) >= MAX_BOARD_SIZE) {
+      return false;
+    } else {
+      for (int i = 0; i < length; i++) {
+        if (this->myShipBoard[i][col] == SHIP)
           return false;
       }
     }
@@ -146,12 +146,12 @@ bool AIPlayer::canPlaceShip(int row, int col, int direction, int length) {
 void AIPlayer::markShip(int row, int col, int direction, int length) {
   if (direction == 1) {
     for (int i = 0; i < length; i++) {
-      this->myShipBoard[i][col] = SHIP;
+      this->myShipBoard[row][i] = SHIP;
     }
   } else {
     if (direction == 2) {
       for (int i = 0; i < length; i++) {
-        this->myShipBoard[row][i] = SHIP;
+        this->myShipBoard[i][col] = SHIP;
       }
     }
   }
@@ -174,6 +174,7 @@ Message AIPlayer::placeShip(int length) {
       col = random() % MAX_BOARD_SIZE;
       row = random() % (MAX_BOARD_SIZE - length + 1);
     }
+//    printf("Ship #: %i     ---    Loc:(%i, %i) row col\n", numShipsPlaced, row, col);
     if (canPlaceShip(row, col, horizontal, length)) {
       markShip(row, col, horizontal, length);
       Message response(PLACE_SHIP, row, col, shipName, Direction(horizontal), length);
