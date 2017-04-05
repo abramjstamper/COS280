@@ -71,11 +71,11 @@ void AIPlayer::copyWhereEnemyShotThisRoundToThisGame() {
 /**
  * debug function to print the placement of ships
  */
-void AIPlayer::printShipPlacement(int numShip, int length, int row, int col){
+void AIPlayer::printShipPlacement(int numShip, int length, int row, int col) {
   printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
-  for(int r = 0; r < MAX_BOARD_SIZE; r++){
+  for (int r = 0; r < MAX_BOARD_SIZE; r++) {
     printf("%i  ", r);
-    for(int c = 0; c < MAX_BOARD_SIZE; c++){
+    for (int c = 0; c < MAX_BOARD_SIZE; c++) {
       printf("%c | ", this->myShipBoard[r][c]);
     }
     printf("\n  ------------------------------------\n");
@@ -185,23 +185,62 @@ Message AIPlayer::placeShip(int length) {
   char shipName[10];
   int row = 0;
   int col = 0;
-  int horizontal = 0;
+  int corner = 0;
+  int ZERO_BASED_MAX_BOARD_SIZE = 9;
+  int direction = random() % 2 + 1;
   // Create ship names each time called: Ship0, Ship1, Ship2, ...
   snprintf(shipName, sizeof shipName, "Ship%d", numShipsPlaced);
 
+  if (numShipsPlaced < 1) {
+    corner = random() % 3 + 1;
+  }
+//  printf("Board Size: %i   -   Corner: %i\n", MAX_BOARD_SIZE, corner);
   while (true) {
-    horizontal = random() % 2 + 1;
-    if (horizontal == 1) {
-      col = random() % (MAX_BOARD_SIZE - length + 1);
-      row = random() % MAX_BOARD_SIZE;
-    } else {
-      col = random() % MAX_BOARD_SIZE;
-      row = random() % (MAX_BOARD_SIZE - length + 1);
+    switch (corner) {
+      case 1:
+        col = 0;
+        row = 0;
+        break;
+      case 2:
+        if (direction == 1) {
+          col = ZERO_BASED_MAX_BOARD_SIZE - length;
+          row = 0;
+        } else {
+          col = ZERO_BASED_MAX_BOARD_SIZE;
+          row = 0;
+        }
+        break;
+      case 3:
+        if (direction == 1) {
+          col = ZERO_BASED_MAX_BOARD_SIZE - length;
+          row = ZERO_BASED_MAX_BOARD_SIZE;
+        } else {
+          col = ZERO_BASED_MAX_BOARD_SIZE;
+          row = ZERO_BASED_MAX_BOARD_SIZE - length;
+        }
+        break;
+      case 4:
+        if (direction == 1) {
+          col = 0;
+          row = ZERO_BASED_MAX_BOARD_SIZE;
+        } else {
+          col = 0;
+          row = ZERO_BASED_MAX_BOARD_SIZE - length;
+        }
+        break;
+      default:
+        if (direction == 1) {
+          col = random() % (MAX_BOARD_SIZE - length + 1);
+          row = random() % MAX_BOARD_SIZE;
+        } else {
+          col = random() % MAX_BOARD_SIZE;
+          row = random() % (MAX_BOARD_SIZE - length + 1);
+        }
     }
-    if (canPlaceShip(row, col, horizontal, length)) {
-      markShip(row, col, horizontal, length);
+    if (canPlaceShip(row, col, direction, length)) {
+      markShip(row, col, direction, length);
 //      printShipPlacement(numShipsPlaced, length, row, col);
-      Message response(PLACE_SHIP, row, col, shipName, Direction(horizontal), length);
+      Message response(PLACE_SHIP, row, col, shipName, Direction(direction), length);
       numShipsPlaced++;
       return response;
     }
