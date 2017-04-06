@@ -57,11 +57,23 @@ private:
 
     void updateHeatMap(int row, int col);
 
+    int calculateWeightedAverage(int row, int col);
+
     int lastRow;
     int lastCol;
     bool lastShotWasHit;
-    int moveNumber;
     int numShipsPlaced;
+    const int searchPatternHeatmap[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = {
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0}
+    };
     int enemyHeatmapThisRound[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     int enemyHeatmapThisGame[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     char myShipBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];

@@ -51,28 +51,12 @@ AIPlayer::~AIPlayer() {}
  * Private internal function that initializes a MAX_BOARD_SIZE 2D array of char to water.
  */
 void AIPlayer::initializeBoard() {
-  int r = 0;
-  int c = 1;
 
   for (int row = 0; row < boardSize; row++) {
     for (int col = 0; col < boardSize; col++) {
       this->board[row][col] = WATER;
       this->myShipBoard[row][col] = WATER;
-      //inner pattern to prioritize middle 4
-      if ((row == 5 && col == 4) || (row == 4 && col == 5))
-        this->enemyHeatmapThisRound[row][col] = 3;
-      else {
-        //checker board pattern here
-        if (r == row && c == col) {
-          this->enemyHeatmapThisRound[row][col] = 2;
-          r++;
-          c++;
-          if(col < MAX_BOARD_SIZE)
-            col = 0;
-        } else {
-          this->enemyHeatmapThisRound[row][col] = 0;
-        }
-      }
+      this->enemyHeatmapThisRound[row][col] = 0;
     }
   }
 }
@@ -125,7 +109,7 @@ void AIPlayer::addShot(int row, int col) {
   this->lastShotWasHit = true;
 }
 
-void AIPlayer::resetAfterKill(int row, int col){
+void AIPlayer::resetAfterKill(int row, int col) {
   if (row - 1 > -1)
     this->enemyHeatmapThisRound[row - 1][col] = 0;
   if (col - 1 > -1)
@@ -276,18 +260,13 @@ int *AIPlayer::checkHeatMap() {
   int col = 0;
   for (int r = 0; r < MAX_BOARD_SIZE; r++) {
     for (int c = 0; c < MAX_BOARD_SIZE; c++) {
-      if ((enemyHeatmapThisRound[r][c] > localMax) && board[r][c] == WATER) {
-        localMax = enemyHeatmapThisRound[r][c];
+      if ((this->calculateWeightedAverage(r, c) > localMax) && board[r][c] == WATER) {
+        localMax = calculateWeightedAverage(r, c);
         row = r;
         col = c;
       }
     }
   }
-//  if (localMax == 0) {
-//    row = random() % 10;
-//    col = random() % 10;
-//    localMax = enemyHeatmapThisRound[row][col];
-//  }
 
   buffer[0] = row;
   buffer[1] = col;
@@ -312,18 +291,20 @@ Message AIPlayer::getMove() {
     int *buffer = this->checkHeatMap();
     row = buffer[0];
     col = buffer[1];
-    if (lastShotWasHit) {
-      //do something
-    }
 
     if (this->validMove(row, col)) {
       lastRow = row;
       lastCol = col;
-      this->moveNumber++;
       Message result(SHOT, row, col, "Bang", None, 1);
       return result;
     }
   }
+}
+
+int AIPlayer::calculateWeightedAverage(int row, int col) {
+  return (this->enemyHeatmapThisRound[row][col] * 1) +
+         (this->enemyHeatmapThisGame[row][col] * 1) +
+         (this->searchPatternHeatmap[row][col] * 1);
 }
 
 /**
@@ -337,7 +318,6 @@ void AIPlayer::newRound() {
   this->lastRow = 0;
   this->lastCol = -1;
   this->numShipsPlaced = 0;
-  this->moveNumber = 0;
   this->lastShotWasHit = false;
 
   this->initializeBoard();
@@ -370,7 +350,6 @@ Message AIPlayer::placeShip(int length) {
   if (numShipsPlaced < 1) {
     corner = random() % 3 + 1;
   }
-//  printf("Board Size: %i   -   Corner: %i\n", MAX_BOARD_SIZE, corner);
   while (true) {
     switch (corner) {
       case 1:
