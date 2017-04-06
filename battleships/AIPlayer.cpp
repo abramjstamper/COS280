@@ -109,11 +109,13 @@ void AIPlayer::addShot(int row, int col){
 }
 
 void AIPlayer::updateHeatMap(int row, int col){
+  //Misc
   this->enemyHeatmapThisRound[row + 1][col] += 1;
   this->enemyHeatmapThisRound[row][col + 1] += 1;
   this->enemyHeatmapThisRound[row - 1][col] += 1;
   this->enemyHeatmapThisRound[row][col - 1] += 1;
 
+  //vertical
   if(this->board[row+1][col] == HIT) {
     this->enemyHeatmapThisRound[row + 2][col] += 2;
     this->enemyHeatmapThisRound[row][col+1] -= 2;
@@ -130,6 +132,7 @@ void AIPlayer::updateHeatMap(int row, int col){
     this->enemyHeatmapThisRound[row - 1][col - 1] -= 2;
   }
 
+  //horizontal
   if(this->board[row][col+1] == HIT) {
     this->enemyHeatmapThisRound[row][col - 1] += 2;
     this->enemyHeatmapThisRound[row + 1][col] -= 2;
@@ -233,7 +236,7 @@ Message AIPlayer::getMove() {
   int col = 0;
 
   while(true){
-    if(moveNumber > 8){
+    if(moveNumber > 4){
       int* buffer = this->checkHeatMap();
       row = buffer[0];
       col = buffer[1];
