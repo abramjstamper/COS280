@@ -45,6 +45,8 @@ private:
 
     void missShot(int row, int col);
 
+    void resetAfterKill(int row, int col);
+
     bool canPlaceShip(int row, int col, int direction, int length);
 
     void markShip(int row, int col, int direction, int length);
