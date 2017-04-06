@@ -118,7 +118,7 @@ void AIPlayer::addShot(int row, int col){
 
 void AIPlayer::missShot(int row, int col){
   //this->lastShotWasHit = false;
-  this->enemyHeatmapThisRound[row][col] = 0;
+  this->enemyHeatmapThisRound[row][col] = -10;
   if(row - 1 > -1)
     this->enemyHeatmapThisRound[row-1][col] -= 1;
   if(col - 1 > -1)
@@ -130,60 +130,66 @@ void AIPlayer::missShot(int row, int col){
 }
 
 void AIPlayer::updateHeatMap(int row, int col){
-  //Misc
 
+  //Misc
   if(row + 1 < MAX_BOARD_SIZE)
-    this->enemyHeatmapThisRound[row + 1][col] += 1;
+    this->enemyHeatmapThisRound[row + 1][col] += 2;
   if(col + 1 < MAX_BOARD_SIZE)
-    this->enemyHeatmapThisRound[row][col + 1] += 1;
+    this->enemyHeatmapThisRound[row][col + 1] += 2;
   if(row - 1 > -1)
-    this->enemyHeatmapThisRound[row - 1][col] += 1;
+    this->enemyHeatmapThisRound[row - 1][col] += 2;
   if(col - 1 > -1)
-    this->enemyHeatmapThisRound[row][col - 1] += 1;
+    this->enemyHeatmapThisRound[row][col - 1] += 2;
 
 
     //vertical
     if (this->board[row + 1][col] == HIT) {
       if(row + 2 < MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row + 2][col] += 2;
+        this->enemyHeatmapThisRound[row + 2][col] += 3;
       if(col + 1 < MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row][col + 1] -= 2;
+        this->enemyHeatmapThisRound[row][col + 1] -= 1;
       if(col - 1 > -1)
-        this->enemyHeatmapThisRound[row][col - 1] -= 2;
+        this->enemyHeatmapThisRound[row][col - 1] -= 1;
       if(row + 1 < MAX_BOARD_SIZE && col + 1 > MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row + 1][col + 1] -= 2;
+        this->enemyHeatmapThisRound[row + 1][col + 1] -= 1;
       if(row + 1 < MAX_BOARD_SIZE && col - 1 > -1)
-        this->enemyHeatmapThisRound[row + 1][col - 1] -= 2;
+        this->enemyHeatmapThisRound[row + 1][col - 1] -= 1;
+      if(row - 1 > -1)
+        this->enemyHeatmapThisRound[row - 1][col] +=2;
     }
 
     if (this->board[row - 1][col] == HIT) {
       if(row - 2 > -1)
-        this->enemyHeatmapThisRound[row - 2][col] += 2;
+        this->enemyHeatmapThisRound[row - 2][col] += 1;
       if(col + 1 < MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row][col + 1] -= 2;
+        this->enemyHeatmapThisRound[row][col + 1] -= 1;
       if(col - 1 > -1)
-        this->enemyHeatmapThisRound[row][col - 1] -= 2;
+        this->enemyHeatmapThisRound[row][col - 1] -= 1;
       if(row - 1 > -1 && col + 1 < MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row - 1][col + 1] -= 2;
+        this->enemyHeatmapThisRound[row - 1][col + 1] -= 1;
       if(row - 1 > -1 && col - 1 > -1)
-        this->enemyHeatmapThisRound[row - 1][col - 1] -= 2;
+        this->enemyHeatmapThisRound[row - 1][col - 1] -= 1;
+      if(row + 1 < MAX_BOARD_SIZE)
+        this->enemyHeatmapThisRound[row + 1][col] +=2;
     }
 
     //horizontal
     if (this->board[row][col + 1] == HIT) {
-        this->enemyHeatmapThisRound[row][col - 1] += 2;
-      this->enemyHeatmapThisRound[row + 1][col] -= 2;
-      this->enemyHeatmapThisRound[row - 1][col] -= 2;
-      this->enemyHeatmapThisRound[row - 1][col + 1] -= 2;
-      this->enemyHeatmapThisRound[row + 1][col + 1] -= 2;
+      this->enemyHeatmapThisRound[row][col - 1] += 3;
+      this->enemyHeatmapThisRound[row + 1][col] -= 1;
+      this->enemyHeatmapThisRound[row - 1][col] -= 1;
+      this->enemyHeatmapThisRound[row - 1][col + 1] -= 1;
+      this->enemyHeatmapThisRound[row + 1][col + 1] -= 1;
+      this->enemyHeatmapThisRound[row][col - 1] +=2;
     }
 
     if (this->board[row][col - 1] == HIT) {
-      this->enemyHeatmapThisRound[row][col + 1] += 2;
-      this->enemyHeatmapThisRound[row + 1][col] -= 2;
-      this->enemyHeatmapThisRound[row - 1][col] -= 2;
-      this->enemyHeatmapThisRound[row - 1][col - 1] -= 2;
-      this->enemyHeatmapThisRound[row + 1][col - 1] -= 2;
+      this->enemyHeatmapThisRound[row][col + 1] += 3;
+      this->enemyHeatmapThisRound[row + 1][col] -= 1;
+      this->enemyHeatmapThisRound[row - 1][col] -= 1;
+      this->enemyHeatmapThisRound[row - 1][col - 1] -= 1;
+      this->enemyHeatmapThisRound[row + 1][col - 1] -= 1;
+      this->enemyHeatmapThisRound[row][col + 1] +=2;
     }
 
 }
@@ -252,7 +258,6 @@ int* AIPlayer::checkHeatMap(){
     localMax = enemyHeatmapThisRound[row][col];
   }
 
-  //int* buffer = (int *) malloc(sizeof(int) * 3);
   buffer[0] = row;
   buffer[1] = col;
   buffer[2] = localMax;
@@ -393,9 +398,8 @@ Message AIPlayer::placeShip(int length) {
 void AIPlayer::update(Message msg) {
   switch (msg.getMessageType()) {
     case HIT:
-    case KILL:
-      //weighs heavier when there's a kill
       this->addShot(msg.getRow(), msg.getCol());
+    case KILL:
       this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
       break;
     case MISS:
