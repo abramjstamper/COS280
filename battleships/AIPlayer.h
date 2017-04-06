@@ -14,6 +14,7 @@ using namespace std;
 #include "PlayerV2.h"
 #include "Message.h"
 #include "defines.h"
+#include <stack>
 
 // DumbPlayer inherits from/extends PlayerV2
 
@@ -33,15 +34,32 @@ public:
 
 private:
     void initializeBoard();
-    void copyWhereEnemyShotThisRoundToThisGame();
-    void printShipPlacement(int numShip, int length, int row, int col);
+
+    void copyEnemyShipLocation();
+
+    void printBoard(int board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]);
+
+    void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]);
+
+    void addShot(int row, int col);
+
     bool canPlaceShip(int row, int col, int direction, int length);
+
     void markShip(int row, int col, int direction, int length);
+
+    bool validMove(int row, int col);
+
+    int* checkHeatMap();
+
+    void updateHeatMap(int row, int col);
+
     int lastRow;
     int lastCol;
+    bool lastShotWasHit;
+    int moveNumber;
     int numShipsPlaced;
-    int whereEnemyShotThisRound[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
-    int whereEnemyShotThisGame[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    int enemyHeatmapThisRound[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    int enemyHeatmapThisGame[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     char myShipBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
 };
