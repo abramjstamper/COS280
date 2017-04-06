@@ -43,6 +43,8 @@ private:
 
     void addShot(int row, int col);
 
+    void missShot(int row, int col);
+
     bool canPlaceShip(int row, int col, int direction, int length);
 
     void markShip(int row, int col, int direction, int length);
@@ -62,6 +64,7 @@ private:
     int enemyHeatmapThisGame[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     char myShipBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    int buffer[3];
 };
 
 #endif
