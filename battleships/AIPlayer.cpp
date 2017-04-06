@@ -141,7 +141,6 @@ void AIPlayer::updateHeatMap(int row, int col){
   if(col - 1 > -1)
     this->enemyHeatmapThisRound[row][col - 1] += 2;
 
-
     //vertical
     if (this->board[row + 1][col] == HIT) {
       if(row + 2 < MAX_BOARD_SIZE)
@@ -160,7 +159,7 @@ void AIPlayer::updateHeatMap(int row, int col){
 
     if (this->board[row - 1][col] == HIT) {
       if(row - 2 > -1)
-        this->enemyHeatmapThisRound[row - 2][col] += 1;
+        this->enemyHeatmapThisRound[row - 2][col] += 3;
       if(col + 1 < MAX_BOARD_SIZE)
         this->enemyHeatmapThisRound[row][col + 1] -= 1;
       if(col - 1 > -1)
