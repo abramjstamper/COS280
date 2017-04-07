@@ -31,12 +31,12 @@ using namespace conio;
  */
 AIPlayer::AIPlayer(int boardSize)
         : PlayerV2(boardSize) {
-  // Could do any initialization of inter-round data structures here.
-  for (int row = 0; row < boardSize; row++) {
-    for (int col = 0; col < boardSize; col++) {
-      this->enemyHeatmapThisGame[row][col] = 0;
+    // Could do any initialization of inter-round data structures here.
+    for (int row = 0; row < boardSize; row++) {
+        for (int col = 0; col < boardSize; col++) {
+            this->enemyHeatmapThisGame[row][col] = 0;
+        }
     }
-  }
 
 }
 
@@ -52,52 +52,52 @@ AIPlayer::~AIPlayer() {}
  */
 void AIPlayer::initializeBoard() {
 
-  for (int row = 0; row < boardSize; row++) {
-    for (int col = 0; col < boardSize; col++) {
-      this->board[row][col] = WATER;
-      this->myShipBoard[row][col] = WATER;
-      this->enemyHeatmapThisRound[row][col] = 0;
+    for (int row = 0; row < boardSize; row++) {
+        for (int col = 0; col < boardSize; col++) {
+            this->board[row][col] = WATER;
+            this->myShipBoard[row][col] = WATER;
+            this->enemyHeatmapThisRound[row][col] = 0;
+        }
     }
-  }
 }
 
 void AIPlayer::copyEnemyShipLocation() {
-  for (int i = 0; i < MAX_BOARD_SIZE; i++) {
-    for (int j = 0; j < MAX_BOARD_SIZE; j++) {
-      enemyHeatmapThisGame[i][j] += enemyHeatmapThisRound[i][j];
+    for (int i = 0; i < MAX_BOARD_SIZE; i++) {
+        for (int j = 0; j < MAX_BOARD_SIZE; j++) {
+            enemyHeatmapThisGame[i][j] += enemyHeatmapThisRound[i][j];
+        }
     }
-  }
 }
 
 /**
  * debug function to print the placement of ships
  */
 void AIPlayer::printBoard(int board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]) {
-  printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
-  for (int r = 0; r < MAX_BOARD_SIZE; r++) {
-    printf("%i  ", r);
-    for (int c = 0; c < MAX_BOARD_SIZE; c++) {
-      printf("%i | ", board[r][c]);
+    printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
+    for (int r = 0; r < MAX_BOARD_SIZE; r++) {
+        printf("%i  ", r);
+        for (int c = 0; c < MAX_BOARD_SIZE; c++) {
+            printf("%i | ", board[r][c]);
+        }
+        printf("\n  ---------------------------------------\n");
     }
-    printf("\n  ---------------------------------------\n");
-  }
-  printf("\n");
-  printf("\n");
-  printf("\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
 }
 
 void AIPlayer::printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]) {
-  printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
-  for (int r = 0; r < MAX_BOARD_SIZE; r++) {
-    printf("%i  ", r);
-    for (int c = 0; c < MAX_BOARD_SIZE; c++) {
-      printf("%c | ", board[r][c]);
+    printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
+    for (int r = 0; r < MAX_BOARD_SIZE; r++) {
+        printf("%i  ", r);
+        for (int c = 0; c < MAX_BOARD_SIZE; c++) {
+            printf("%c | ", board[r][c]);
+        }
+        printf("\n  ---------------------------------------\n");
     }
-    printf("\n  ---------------------------------------\n");
-  }
-  printf("\n");
-  printf("\n");
-  printf("\n");
+    printf("\n");
+    printf("\n");
+    printf("\n");
 }
 
 /**
@@ -105,173 +105,173 @@ void AIPlayer::printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]) {
  */
 
 void AIPlayer::addShot(int row, int col) {
-  this->updateHeatMap(row, col);
-  this->lastShotWasHit = true;
+    this->updateHeatMap(row, col);
+    this->lastShotWasHit = true;
 }
 
 void AIPlayer::resetAfterKill(int row, int col) {
-  if (row - 1 > -1)
-    this->enemyHeatmapThisRound[row - 1][col] = 0;
-  if (col - 1 > -1)
-    this->enemyHeatmapThisRound[row][col - 1] = 0;
-  if (row + 1 < MAX_BOARD_SIZE)
-    this->enemyHeatmapThisRound[row + 1][col] = 0;
-  if (col + 1 < MAX_BOARD_SIZE)
-    this->enemyHeatmapThisRound[row][col + 1] = 0;
+    if (row - 1 > -1)
+        this->enemyHeatmapThisRound[row - 1][col] = 0;
+    if (col - 1 > -1)
+        this->enemyHeatmapThisRound[row][col - 1] = 0;
+    if (row + 1 < MAX_BOARD_SIZE)
+        this->enemyHeatmapThisRound[row + 1][col] = 0;
+    if (col + 1 < MAX_BOARD_SIZE)
+        this->enemyHeatmapThisRound[row][col + 1] = 0;
 }
 
 void AIPlayer::missShot(int row, int col) {
-  //this->lastShotWasHit = false;
-  this->enemyHeatmapThisRound[row][col] = -10;
-  if (row - 1 > -1)
-    this->enemyHeatmapThisRound[row - 1][col] -= 1;
-  if (col - 1 > -1)
-    this->enemyHeatmapThisRound[row][col - 1] -= 1;
-  if (row + 1 < MAX_BOARD_SIZE)
-    this->enemyHeatmapThisRound[row + 1][col] -= 1;
-  if (col + 1 < MAX_BOARD_SIZE)
-    this->enemyHeatmapThisRound[row][col + 1] -= 1;
+    //this->lastShotWasHit = false;
+    this->enemyHeatmapThisRound[row][col] = -10;
+    if (row - 1 > -1)
+        this->enemyHeatmapThisRound[row - 1][col] -= 1;
+    if (col - 1 > -1)
+        this->enemyHeatmapThisRound[row][col - 1] -= 1;
+    if (row + 1 < MAX_BOARD_SIZE)
+        this->enemyHeatmapThisRound[row + 1][col] -= 1;
+    if (col + 1 < MAX_BOARD_SIZE)
+        this->enemyHeatmapThisRound[row][col + 1] -= 1;
 }
 
 void AIPlayer::updateHeatMap(int row, int col) {
 
-  //Misc
-  if (row + 1 < MAX_BOARD_SIZE)
-    this->enemyHeatmapThisRound[row + 1][col] += 2;
-  if (col + 1 < MAX_BOARD_SIZE)
-    this->enemyHeatmapThisRound[row][col + 1] += 2;
-  if (row - 1 > -1)
-    this->enemyHeatmapThisRound[row - 1][col] += 2;
-  if (col - 1 > -1)
-    this->enemyHeatmapThisRound[row][col - 1] += 2;
-
-  //vertical
-  if (this->board[row + 1][col] == HIT) {
-    if (row + 2 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row + 2][col] += 3;
-    if (col + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row][col + 1] -= 1;
-    if (col - 1 > -1)
-      this->enemyHeatmapThisRound[row][col - 1] -= 1;
-    if (row + 1 < MAX_BOARD_SIZE && col + 1 > MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row + 1][col + 1] -= 1;
-    if (row + 1 < MAX_BOARD_SIZE && col - 1 > -1)
-      this->enemyHeatmapThisRound[row + 1][col - 1] -= 1;
-    if (row - 1 > -1)
-      this->enemyHeatmapThisRound[row - 1][col] += 2;
-  }
-
-  if (this->board[row - 1][col] == HIT) {
-    if (row - 2 > -1)
-      this->enemyHeatmapThisRound[row - 2][col] += 3;
-    if (col + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row][col + 1] -= 1;
-    if (col - 1 > -1)
-      this->enemyHeatmapThisRound[row][col - 1] -= 1;
-    if (row - 1 > -1 && col + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row - 1][col + 1] -= 1;
-    if (row - 1 > -1 && col - 1 > -1)
-      this->enemyHeatmapThisRound[row - 1][col - 1] -= 1;
+    //Misc
     if (row + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row + 1][col] += 2;
-  }
-
-  //horizontal
-  if (this->board[row][col + 1] == HIT) {
-    if (col - 1 > -1)
-      this->enemyHeatmapThisRound[row][col - 1] += 3;
-    if (row + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row + 1][col] -= 1;
-    if (row - 1 > -1)
-      this->enemyHeatmapThisRound[row - 1][col] -= 1;
-    if (row - 1 > -1 && col + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row - 1][col + 1] -= 1;
-    if (row + 1 < MAX_BOARD_SIZE && col + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row + 1][col + 1] -= 1;
-    if (col - 1 > -1)
-      this->enemyHeatmapThisRound[row][col - 1] += 2;
-  }
-
-  if (this->board[row][col - 1] == HIT) {
+        this->enemyHeatmapThisRound[row + 1][col] += 2;
     if (col + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row][col + 1] += 3;
-    if (row + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row + 1][col] -= 1;
+        this->enemyHeatmapThisRound[row][col + 1] += 2;
     if (row - 1 > -1)
-      this->enemyHeatmapThisRound[row - 1][col] -= 1;
-    if (row - 1 > -1 && col - 1 > -1)
-      this->enemyHeatmapThisRound[row - 1][col - 1] -= 1;
-    if (row + 1 < MAX_BOARD_SIZE && col - 1 > -1)
-      this->enemyHeatmapThisRound[row + 1][col - 1] -= 1;
-    if (col + 1 < MAX_BOARD_SIZE)
-      this->enemyHeatmapThisRound[row][col + 1] += 2;
-  }
+        this->enemyHeatmapThisRound[row - 1][col] += 2;
+    if (col - 1 > -1)
+        this->enemyHeatmapThisRound[row][col - 1] += 2;
+
+    //vertical
+    if (this->board[row + 1][col] == HIT) {
+        if (row + 2 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row + 2][col] += 3;
+        if (col + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row][col + 1] -= 1;
+        if (col - 1 > -1)
+            this->enemyHeatmapThisRound[row][col - 1] -= 1;
+        if (row + 1 < MAX_BOARD_SIZE && col + 1 > MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row + 1][col + 1] -= 1;
+        if (row + 1 < MAX_BOARD_SIZE && col - 1 > -1)
+            this->enemyHeatmapThisRound[row + 1][col - 1] -= 1;
+        if (row - 1 > -1)
+            this->enemyHeatmapThisRound[row - 1][col] += 2;
+    }
+
+    if (this->board[row - 1][col] == HIT) {
+        if (row - 2 > -1)
+            this->enemyHeatmapThisRound[row - 2][col] += 3;
+        if (col + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row][col + 1] -= 1;
+        if (col - 1 > -1)
+            this->enemyHeatmapThisRound[row][col - 1] -= 1;
+        if (row - 1 > -1 && col + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row - 1][col + 1] -= 1;
+        if (row - 1 > -1 && col - 1 > -1)
+            this->enemyHeatmapThisRound[row - 1][col - 1] -= 1;
+        if (row + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row + 1][col] += 2;
+    }
+
+    //horizontal
+    if (this->board[row][col + 1] == HIT) {
+        if (col - 1 > -1)
+            this->enemyHeatmapThisRound[row][col - 1] += 3;
+        if (row + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row + 1][col] -= 1;
+        if (row - 1 > -1)
+            this->enemyHeatmapThisRound[row - 1][col] -= 1;
+        if (row - 1 > -1 && col + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row - 1][col + 1] -= 1;
+        if (row + 1 < MAX_BOARD_SIZE && col + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row + 1][col + 1] -= 1;
+        if (col - 1 > -1)
+            this->enemyHeatmapThisRound[row][col - 1] += 2;
+    }
+
+    if (this->board[row][col - 1] == HIT) {
+        if (col + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row][col + 1] += 3;
+        if (row + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row + 1][col] -= 1;
+        if (row - 1 > -1)
+            this->enemyHeatmapThisRound[row - 1][col] -= 1;
+        if (row - 1 > -1 && col - 1 > -1)
+            this->enemyHeatmapThisRound[row - 1][col - 1] -= 1;
+        if (row + 1 < MAX_BOARD_SIZE && col - 1 > -1)
+            this->enemyHeatmapThisRound[row + 1][col - 1] -= 1;
+        if (col + 1 < MAX_BOARD_SIZE)
+            this->enemyHeatmapThisRound[row][col + 1] += 2;
+    }
 
 }
 
 void AIPlayer::markShip(int row, int col, int direction, int length) {
-  if (direction == 1) {
-    for (int i = col; i < (col + length); i++) {
-      this->myShipBoard[row][i] = SHIP;
+    if (direction == 1) {
+        for (int i = col; i < (col + length); i++) {
+            this->myShipBoard[row][i] = SHIP;
+        }
+    } else {
+        if (direction == 2) {
+            for (int i = row; i < (row + length); i++) {
+                this->myShipBoard[i][col] = SHIP;
+            }
+        }
     }
-  } else {
-    if (direction == 2) {
-      for (int i = row; i < (row + length); i++) {
-        this->myShipBoard[i][col] = SHIP;
-      }
-    }
-  }
 }
 
 bool AIPlayer::canPlaceShip(int row, int col, int direction, int length) {
-  if (direction == 1) {
-    if ((col + length) >= MAX_BOARD_SIZE) {
-      return false;
+    if (direction == 1) {
+        if ((col + length) >= MAX_BOARD_SIZE) {
+            return false;
+        } else {
+            for (int i = col; i < (col + length); i++) {
+                if (this->myShipBoard[row][i] == SHIP)
+                    return false;
+            }
+        }
     } else {
-      for (int i = col; i < (col + length); i++) {
-        if (this->myShipBoard[row][i] == SHIP)
-          return false;
-      }
+        if ((row + length) >= MAX_BOARD_SIZE) {
+            return false;
+        } else {
+            for (int i = row; i < (row + length); i++) {
+                if (this->myShipBoard[i][col] == SHIP)
+                    return false;
+            }
+        }
     }
-  } else {
-    if ((row + length) >= MAX_BOARD_SIZE) {
-      return false;
-    } else {
-      for (int i = row; i < (row + length); i++) {
-        if (this->myShipBoard[i][col] == SHIP)
-          return false;
-      }
-    }
-  }
-  return true;
+    return true;
 }
 
 bool AIPlayer::validMove(int row, int col) {
-  if (board[row][col] == WATER && (row < MAX_BOARD_SIZE) && (col < MAX_BOARD_SIZE)) {
-    return true;
-  } else {
-    return false;
-  }
+    if (board[row][col] == WATER && (row < MAX_BOARD_SIZE) && (col < MAX_BOARD_SIZE)) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 int *AIPlayer::checkHeatMap() {
-  int localMax = -1000;
-  int row = 0;
-  int col = 0;
-  for (int r = 0; r < MAX_BOARD_SIZE; r++) {
-    for (int c = 0; c < MAX_BOARD_SIZE; c++) {
-      if ((this->calculateWeightedAverage(r, c) > localMax) && board[r][c] == WATER) {
-        localMax = calculateWeightedAverage(r, c);
-        row = r;
-        col = c;
-      }
+    int localMax = -1000;
+    int row = 0;
+    int col = 0;
+    for (int r = 0; r < MAX_BOARD_SIZE; r++) {
+        for (int c = 0; c < MAX_BOARD_SIZE; c++) {
+            if ((this->calculateWeightedAverage(r, c) > localMax) && board[r][c] == WATER) {
+                localMax = calculateWeightedAverage(r, c);
+                row = r;
+                col = c;
+            }
+        }
     }
-  }
 
-  buffer[0] = row;
-  buffer[1] = col;
-  buffer[2] = localMax;
-  return buffer;
+    buffer[0] = row;
+    buffer[1] = col;
+    buffer[2] = localMax;
+    return buffer;
 }
 
 
@@ -284,27 +284,27 @@ int *AIPlayer::checkHeatMap() {
  * Message constructor.
  */
 Message AIPlayer::getMove() {
-  int row = 0;
-  int col = 0;
+    int row = 0;
+    int col = 0;
 
-  while (true) {
-    int *buffer = this->checkHeatMap();
-    row = buffer[0];
-    col = buffer[1];
+    while (true) {
+        int *buffer = this->checkHeatMap();
+        row = buffer[0];
+        col = buffer[1];
 
-    if (this->validMove(row, col)) {
-      lastRow = row;
-      lastCol = col;
-      Message result(SHOT, row, col, "Bang", None, 1);
-      return result;
+        if (this->validMove(row, col)) {
+            lastRow = row;
+            lastCol = col;
+            Message result(SHOT, row, col, "Bang", None, 1);
+            return result;
+        }
     }
-  }
 }
 
 int AIPlayer::calculateWeightedAverage(int row, int col) {
-  return (this->enemyHeatmapThisRound[row][col] * 1) +
-         (this->enemyHeatmapThisGame[row][col] * 1) +
-         (this->searchPatternHeatmap[row][col] * 1);
+    return (this->enemyHeatmapThisRound[row][col] * 1) +
+           (this->enemyHeatmapThisGame[row][col] * 1) +
+           (this->searchPatternHeatmap[row][col] * 1);
 }
 
 /**
@@ -312,15 +312,15 @@ int AIPlayer::calculateWeightedAverage(int row, int col) {
  * The AI show reinitialize any intra-round data structures.
  */
 void AIPlayer::newRound() {
-  /* DumbPlayer is too simple to do any inter-round learning. Smarter players
-   * reinitialize any round-specific data structures here.
-   */
-  this->lastRow = 0;
-  this->lastCol = -1;
-  this->numShipsPlaced = 0;
-  this->lastShotWasHit = false;
+    /* DumbPlayer is too simple to do any inter-round learning. Smarter players
+     * reinitialize any round-specific data structures here.
+     */
+    this->lastRow = 0;
+    this->lastCol = -1;
+    this->numShipsPlaced = 0;
+    this->lastShotWasHit = false;
 
-  this->initializeBoard();
+    this->initializeBoard();
 }
 
 /**
@@ -338,67 +338,67 @@ void AIPlayer::newRound() {
  * 6. ship length (should match the length passed to placeShip)
  */
 Message AIPlayer::placeShip(int length) {
-  char shipName[10];
-  int row = 0;
-  int col = 0;
-  int corner = 0;
-  int ZERO_BASED_MAX_BOARD_SIZE = 9;
-  int direction = random() % 2 + 1;
-  // Create ship names each time called: Ship0, Ship1, Ship2, ...
-  snprintf(shipName, sizeof shipName, "Ship%d", numShipsPlaced);
+    char shipName[10];
+    int row = 0;
+    int col = 0;
+    int corner = 0;
+    int ZERO_BASED_MAX_BOARD_SIZE = 9;
+    int direction = random() % 2 + 1;
+    // Create ship names each time called: Ship0, Ship1, Ship2, ...
+    snprintf(shipName, sizeof shipName, "Ship%d", numShipsPlaced);
 
-  if (numShipsPlaced < 1) {
-    corner = random() % 3 + 1;
-  }
-  while (true) {
-    switch (corner) {
-      case 1:
-        col = 0;
-        row = 0;
-        break;
-      case 2:
-        if (direction == 1) {
-          col = ZERO_BASED_MAX_BOARD_SIZE - length;
-          row = 0;
-        } else {
-          col = ZERO_BASED_MAX_BOARD_SIZE;
-          row = 0;
+    if (numShipsPlaced < 1) {
+        corner = random() % 3 + 1;
+    }
+    while (true) {
+        switch (corner) {
+            case 1:
+                col = 0;
+                row = 0;
+                break;
+            case 2:
+                if (direction == 1) {
+                    col = ZERO_BASED_MAX_BOARD_SIZE - length;
+                    row = 0;
+                } else {
+                    col = ZERO_BASED_MAX_BOARD_SIZE;
+                    row = 0;
+                }
+                break;
+            case 3:
+                if (direction == 1) {
+                    col = ZERO_BASED_MAX_BOARD_SIZE - length;
+                    row = ZERO_BASED_MAX_BOARD_SIZE;
+                } else {
+                    col = ZERO_BASED_MAX_BOARD_SIZE;
+                    row = ZERO_BASED_MAX_BOARD_SIZE - length;
+                }
+                break;
+            case 4:
+                if (direction == 1) {
+                    col = 0;
+                    row = ZERO_BASED_MAX_BOARD_SIZE;
+                } else {
+                    col = 0;
+                    row = ZERO_BASED_MAX_BOARD_SIZE - length;
+                }
+                break;
+            default:
+                if (direction == 1) {
+                    col = random() % (MAX_BOARD_SIZE - length + 1);
+                    row = random() % MAX_BOARD_SIZE;
+                } else {
+                    col = random() % MAX_BOARD_SIZE;
+                    row = random() % (MAX_BOARD_SIZE - length + 1);
+                }
         }
-        break;
-      case 3:
-        if (direction == 1) {
-          col = ZERO_BASED_MAX_BOARD_SIZE - length;
-          row = ZERO_BASED_MAX_BOARD_SIZE;
-        } else {
-          col = ZERO_BASED_MAX_BOARD_SIZE;
-          row = ZERO_BASED_MAX_BOARD_SIZE - length;
-        }
-        break;
-      case 4:
-        if (direction == 1) {
-          col = 0;
-          row = ZERO_BASED_MAX_BOARD_SIZE;
-        } else {
-          col = 0;
-          row = ZERO_BASED_MAX_BOARD_SIZE - length;
-        }
-        break;
-      default:
-        if (direction == 1) {
-          col = random() % (MAX_BOARD_SIZE - length + 1);
-          row = random() % MAX_BOARD_SIZE;
-        } else {
-          col = random() % MAX_BOARD_SIZE;
-          row = random() % (MAX_BOARD_SIZE - length + 1);
+        if (canPlaceShip(row, col, direction, length)) {
+            markShip(row, col, direction, length);
+            Message response(PLACE_SHIP, row, col, shipName, Direction(direction), length);
+            numShipsPlaced++;
+            return response;
         }
     }
-    if (canPlaceShip(row, col, direction, length)) {
-      markShip(row, col, direction, length);
-      Message response(PLACE_SHIP, row, col, shipName, Direction(direction), length);
-      numShipsPlaced++;
-      return response;
-    }
-  }
 }
 
 /**
@@ -406,27 +406,27 @@ Message AIPlayer::placeShip(int length) {
  * @param msg Message specifying what happened + row/col as appropriate.
  */
 void AIPlayer::update(Message msg) {
-  switch (msg.getMessageType()) {
-    case HIT:
-      this->addShot(msg.getRow(), msg.getCol());
-      this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
-      break;
-    case KILL:
-      this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
-      this->resetAfterKill(msg.getRow(), msg.getCol());
-      break;
-    case MISS:
+    switch (msg.getMessageType()) {
+        case HIT:
+            this->addShot(msg.getRow(), msg.getCol());
+            this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
+            break;
+        case KILL:
+            this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
+            this->resetAfterKill(msg.getRow(), msg.getCol());
+            break;
+        case MISS:
 //      this->missShot(msg.getRow(), msg.getCol());
-      this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
-      break;
-    case WIN:
-    case LOSE:
-    case TIE:
-      this->copyEnemyShipLocation();
-      //this->printBoard(this->enemyHeatmapThisGame);
-      break;
-    case OPPONENT_SHOT:
-      break;
-  }
+            this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
+            break;
+        case WIN:
+        case LOSE:
+        case TIE:
+            this->copyEnemyShipLocation();
+            //this->printBoard(this->enemyHeatmapThisGame);
+            break;
+        case OPPONENT_SHOT:
+            break;
+    }
 }
 
