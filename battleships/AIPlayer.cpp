@@ -14,6 +14,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <memory.h>
 
 #include "conio.h"
 #include "AIPlayer.h"
@@ -38,6 +39,20 @@ AIPlayer::AIPlayer(int boardSize)
         }
     }
 
+  static int searchPatternHeatmap1[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = {
+          {1,0,1,0,1,0,1,0,1,0},
+          {0,2,0,2,0,2,0,2,0,1},
+          {1,0,3,0,3,0,3,0,2,0},
+          {0,2,0,4,0,4,0,3,0,1},
+          {1,0,3,0,5,0,4,0,2,0},
+          {0,2,0,4,0,5,0,3,0,1},
+          {1,0,3,0,4,0,4,0,2,0},
+          {0,2,0,3,0,3,0,3,0,1},
+          {1,0,2,0,2,0,2,0,2,0},
+          {0,1,0,1,0,1,0,1,0,1}
+  };
+
+  memcpy(searchPatternHeatmap, searchPatternHeatmap1, MAX_BOARD_SIZE*MAX_BOARD_SIZE*sizeof(int));
 }
 
 /**
@@ -302,7 +317,7 @@ Message AIPlayer::getMove() {
 }
 
 int AIPlayer::calculateWeightedAverage(int row, int col) {
-    return (this->enemyHeatmapThisRound[row][col] * 1) +
+    return (this->enemyHeatmapThisRound[row][col] * 3) +
            (this->enemyHeatmapThisGame[row][col] * 1) +
            (this->searchPatternHeatmap[row][col] * 1);
 }
