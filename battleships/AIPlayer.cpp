@@ -243,25 +243,25 @@ Location AIPlayer::getRandomLocation() {
 Neighbors AIPlayer::findNearestValidNeighbors(int row, int col) {
   Neighbors neighbors;
 
-  if (row + 1 < MAX_BOARD_SIZE && board[row][col] != WATER) {
+  if ((row + 1 < MAX_BOARD_SIZE) && board[row][col] != WATER) {
     Location loc;
     loc.row = row + 1;
     loc.col = col;
     neighbors.data[0] = loc;
   }
-  if (row - 1 > -1 && board[row][col] != WATER) {
+  if ((row - 1 > -1) && board[row][col] != WATER) {
     Location loc;
     loc.row = row - 1;
     loc.col = col;
     neighbors.data[1] = loc;
   }
-  if (col + 1 < MAX_BOARD_SIZE && board[row][col] != WATER) {
+  if ((col + 1 < MAX_BOARD_SIZE) && board[row][col] != WATER) {
     Location loc;
     loc.row = row;
     loc.col = col + 1;
     neighbors.data[2] = loc;
   }
-  if (col - 1 > -1 && board[row][col] != WATER) {
+  if ((col - 1 > -1) && board[row][col] != WATER) {
     Location loc;
     loc.row = row;
     loc.col = col - 1;
@@ -308,11 +308,7 @@ bool AIPlayer::canPlaceShip(int row, int col, int direction, int length) {
 }
 
 bool AIPlayer::isValidMove(int row, int col) {
-  if (row == NULL || col == NULL)
-    return false;
-
-  if ((this->board[row][col] == WATER) && (row < MAX_BOARD_SIZE) && (col < MAX_BOARD_SIZE) && (row > -1) &&
-      (col > -1)) {
+  if ((row < MAX_BOARD_SIZE) && (col < MAX_BOARD_SIZE) && (row > -1) && (col > -1) && (this->board[row][col] == WATER)) {
     return true;
   } else {
     return false;
@@ -346,6 +342,85 @@ void AIPlayer::getDirectionForAttack(int lastRow, int lastCol, int currentRow, i
   }
 }
 
+Location AIPlayer::getTargetLocation(){
+  Neighbors neighbors = findNearestValidNeighbors(lastRow, lastCol);
+  int i = 0;
+
+  while (true) {
+    if (this->isValidMove(neighbors.data[i].row, neighbors.data[i].col)) {
+      Location result;
+      result.row = neighbors.data[i].row;
+      result.col = neighbors.data[i].col;
+      return result;
+    }
+    i++;
+  }
+}
+
+Location AIPlayer::getAttackingLocation() {
+  if (attackDirection == Horizontal) {
+    if(this->isValidMove(lastRow, lastCol - 1)){
+      Location result;
+      result.row = lastRow;
+      result.col = lastCol - 1;
+      return result;
+    } else {
+      if(this->isValidMove(lastRow, lastCol + 1)){
+        Location result;
+        result.row = lastRow;
+        result.col = lastCol + 1;
+        return result;
+      }
+      else{
+        //go back to first strike
+        if(this->board[lastRow][lastCol + 1] == MISS){
+          Location result;
+          result.row = firstHitRow;
+          result.col = firstHitCol - 1;
+          return result;
+        }
+        else{
+          if(this->board[lastRow][lastCol - 1] == MISS){
+            Location result;
+            result.row = firstHitRow;
+            result.col = firstHitCol + 1;
+            return result;
+          }
+        }
+      }
+    }
+  } else {
+    if (this->isValidMove(lastRow - 1, lastCol)) {
+      Location result;
+      result.row = lastRow - 1;
+      result.col = lastCol;
+      return result;
+    } else {
+      if (this->isValidMove(lastRow + 1, lastCol)) {
+        Location result;
+        result.row = lastRow + 1;
+        result.col = lastCol;
+        return result;
+      } else {
+        //go back to first strike
+        if (this->board[lastRow + 1][lastCol] == MISS) {
+          Location result;
+          result.row = firstHitRow - 1;
+          result.col = firstHitCol;
+          return result;
+        } else {
+          if (this->board[lastRow - 1][lastCol] == MISS) {
+            Location result;
+            result.row = firstHitRow + 1;
+            result.col = firstHitCol;
+            return result;
+          }
+        }
+      }
+    }
+  }
+}
+
 Message AIPlayer::getMove() {
 
   if (mode == HUNT) {
@@ -359,38 +434,23 @@ Message AIPlayer::getMove() {
     }
   } else {
     if (mode == TARGET) {
-      Neighbors neighbors = findNearestValidNeighbors(lastRow, lastCol);
-      int i = 0;
-
-      while (true) {
-        if (this->isValidMove(neighbors.data[i].row, neighbors.data[i].col)) {
-          Message result(SHOT, neighbors.data[i].row, neighbors.data[i].col, "Bang", None, 1);
-          return result;
-        }
-        i++;
-      }
+      Location target = this->getTargetLocation();
+      Message result(SHOT, target.row, target.col, "Bang", None, 1);
+      return result;
     } else {
       if (mode == ATTACKING) {
-        if (attackDirection == Horizontal) {
-          if(this->isValidMove(lastRow, lastCol - 1)){
-            Message result(SHOT, lastRow, lastCol - 1, "Bang", None, 1);
-            return result;
-          } else {
-            if(this->isValidMove(lastRow, lastCol + 1)){
-              Message result(SHOT, lastRow, lastCol + 1, "Bang", None, 1);
-              return result;
-            }
-          }
-        } else {
-          if(this->isValidMove(lastRow - 1, lastCol)){
-            Message result(SHOT, lastRow - 1, lastCol, "Bang", None, 1);
-            return result;
-          } else {
-            if(this->isValidMove(lastRow + 1, lastCol)){
-              Message result(SHOT, lastRow + 1, lastCol, "Bang", None, 1);
-              return result;
-            }
-          }
+        Location attack = this->getAttackingLocation();
+
+        if(this->isValidMove(attack.row, attack.col)){
+          Message result(SHOT, attack.row, attack.col, "Bang", None, 1);
+          return result;
+        }
+        else {
+          //TODO: check for unhit locations
+
+          Location target = this->getTargetLocation();
+          Message result(SHOT, target.row, target.col, "Bang", None, 1);
+          return result;
         }
       }
     }
@@ -408,7 +468,7 @@ void AIPlayer::newRound() {
    * reinitialize any round-specific data structures here.
    */
   this->lastRow = 0;
-  this->lastCol = -1;
+  this->lastCol = 0;
   this->numShipsPlaced = 0;
   this->mode = HUNT;
 

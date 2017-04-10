@@ -59,6 +59,10 @@ private:
 
     bool isValidMove(int row, int col);
 
+    Location getAttackingLocation();
+
+    Location getTargetLocation();
+
     Location findMax();
 
     void updateHeatMap(int row, int col);
