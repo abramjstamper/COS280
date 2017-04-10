@@ -19,6 +19,7 @@ using namespace std;
 // DumbPlayer inherits from/extends PlayerV2
 
 class AIPlayer : public PlayerV2 {
+
 public:
     AIPlayer(int boardSize);
 
@@ -33,6 +34,9 @@ public:
     void update(Message msg);
 
 private:
+
+    typedef struct Location Location;
+
     void initializeBoard();
 
     void copyEnemyShipLocation();
@@ -51,18 +55,21 @@ private:
 
     void markShip(int row, int col, int direction, int length);
 
-    bool validMove(int row, int col);
+    bool isValidMove(int row, int col);
 
-    int* checkHeatMap();
+    Location findMax();
 
     void updateHeatMap(int row, int col);
 
     int calculateWeightedAverage(int row, int col);
 
+    Location getRandomLocation();
+
+    int mode;
     int lastRow;
     int lastCol;
-    bool lastShotWasHit;
     int numShipsPlaced;
+    int shipSizes[6];
     int searchPatternHeatmap[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     int enemyHeatmapThisRound[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     int enemyHeatmapThisGame[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
