@@ -21,13 +21,18 @@
 
 using namespace conio;
 
-typedef struct Location
-{
+typedef struct Location {
     int row;
     int col;
 } Location;
 
-enum Mode { HUNT=1, TARGET=2};
+typedef struct Neighbors {
+    Location data[4];
+} Neighbors;
+
+enum Mode {
+    HUNT = 1, TARGET = 2, ATTACKING = 3
+};
 
 /**
  * @brief Constructor that initializes any inter-round data structures.
@@ -40,27 +45,27 @@ enum Mode { HUNT=1, TARGET=2};
  */
 AIPlayer::AIPlayer(int boardSize)
         : PlayerV2(boardSize) {
-    // Could do any initialization of inter-round data structures here.
-    for (int row = 0; row < boardSize; row++) {
-        for (int col = 0; col < boardSize; col++) {
-            this->enemyHeatmapThisGame[row][col] = 0;
-        }
+  // Could do any initialization of inter-round data structures here.
+  for (int row = 0; row < boardSize; row++) {
+    for (int col = 0; col < boardSize; col++) {
+      this->enemyHeatmapThisGame[row][col] = 0;
     }
+  }
 
   static int searchPatternHeatmap1[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = {
-          {1,0,1,0,1,0,1,0,1,0},
-          {0,2,0,2,0,2,0,2,0,1},
-          {1,0,3,0,3,0,3,0,2,0},
-          {0,2,0,4,0,4,0,3,0,1},
-          {1,0,3,0,5,0,4,0,2,0},
-          {0,2,0,4,0,5,0,3,0,1},
-          {1,0,3,0,4,0,4,0,2,0},
-          {0,2,0,3,0,3,0,3,0,1},
-          {1,0,2,0,2,0,2,0,2,0},
-          {0,1,0,1,0,1,0,1,0,1}
+          {1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
+          {0, 2, 0, 2, 0, 2, 0, 2, 0, 1},
+          {1, 0, 3, 0, 3, 0, 3, 0, 2, 0},
+          {0, 2, 0, 4, 0, 4, 0, 3, 0, 1},
+          {1, 0, 3, 0, 5, 0, 4, 0, 2, 0},
+          {0, 2, 0, 4, 0, 5, 0, 3, 0, 1},
+          {1, 0, 3, 0, 4, 0, 4, 0, 2, 0},
+          {0, 2, 0, 3, 0, 3, 0, 3, 0, 1},
+          {1, 0, 2, 0, 2, 0, 2, 0, 2, 0},
+          {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
   };
 
-  memcpy(searchPatternHeatmap, searchPatternHeatmap1, MAX_BOARD_SIZE*MAX_BOARD_SIZE*sizeof(int));
+  memcpy(searchPatternHeatmap, searchPatternHeatmap1, MAX_BOARD_SIZE * MAX_BOARD_SIZE * sizeof(int));
 }
 
 AIPlayer::~AIPlayer() {}
@@ -70,49 +75,49 @@ AIPlayer::~AIPlayer() {}
  */
 void AIPlayer::initializeBoard() {
 
-    for (int row = 0; row < boardSize; row++) {
-        for (int col = 0; col < boardSize; col++) {
-            this->board[row][col] = WATER;
-            this->myShipBoard[row][col] = WATER;
-            this->enemyHeatmapThisRound[row][col] = 0;
-        }
+  for (int row = 0; row < boardSize; row++) {
+    for (int col = 0; col < boardSize; col++) {
+      this->board[row][col] = WATER;
+      this->myShipBoard[row][col] = WATER;
+      this->enemyHeatmapThisRound[row][col] = 0;
     }
+  }
 }
 
 void AIPlayer::copyEnemyShipLocation() {
-    for (int i = 0; i < MAX_BOARD_SIZE; i++) {
-        for (int j = 0; j < MAX_BOARD_SIZE; j++) {
-            enemyHeatmapThisGame[i][j] += enemyHeatmapThisRound[i][j];
-        }
+  for (int i = 0; i < MAX_BOARD_SIZE; i++) {
+    for (int j = 0; j < MAX_BOARD_SIZE; j++) {
+      enemyHeatmapThisGame[i][j] += enemyHeatmapThisRound[i][j];
     }
+  }
 }
 
 void AIPlayer::printBoard(int board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]) {
-    printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
-    for (int r = 0; r < MAX_BOARD_SIZE; r++) {
-        printf("%i  ", r);
-        for (int c = 0; c < MAX_BOARD_SIZE; c++) {
-            printf("%i | ", board[r][c]);
-        }
-        printf("\n  ---------------------------------------\n");
+  printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
+  for (int r = 0; r < MAX_BOARD_SIZE; r++) {
+    printf("%i  ", r);
+    for (int c = 0; c < MAX_BOARD_SIZE; c++) {
+      printf("%i | ", board[r][c]);
     }
-    printf("\n");
-    printf("\n");
-    printf("\n");
+    printf("\n  ---------------------------------------\n");
+  }
+  printf("\n");
+  printf("\n");
+  printf("\n");
 }
 
 void AIPlayer::printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]) {
-    printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
-    for (int r = 0; r < MAX_BOARD_SIZE; r++) {
-        printf("%i  ", r);
-        for (int c = 0; c < MAX_BOARD_SIZE; c++) {
-            printf("%c | ", board[r][c]);
-        }
-        printf("\n  ---------------------------------------\n");
+  printf("   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9\n");
+  for (int r = 0; r < MAX_BOARD_SIZE; r++) {
+    printf("%i  ", r);
+    for (int c = 0; c < MAX_BOARD_SIZE; c++) {
+      printf("%c | ", board[r][c]);
     }
-    printf("\n");
-    printf("\n");
-    printf("\n");
+    printf("\n  ---------------------------------------\n");
+  }
+  printf("\n");
+  printf("\n");
+  printf("\n");
 }
 
 /**
@@ -120,31 +125,31 @@ void AIPlayer::printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]) {
  */
 
 void AIPlayer::addShot(int row, int col) {
-    this->updateHeatMap(row, col);
+  this->updateHeatMap(row, col);
 }
 
 void AIPlayer::resetAfterKill(int row, int col) {
-    if (row - 1 > -1)
-        this->enemyHeatmapThisRound[row - 1][col] = 0;
-    if (col - 1 > -1)
-        this->enemyHeatmapThisRound[row][col - 1] = 0;
-    if (row + 1 < MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row + 1][col] = 0;
-    if (col + 1 < MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row][col + 1] = 0;
+  if (row - 1 > -1)
+    this->enemyHeatmapThisRound[row - 1][col] = 0;
+  if (col - 1 > -1)
+    this->enemyHeatmapThisRound[row][col - 1] = 0;
+  if (row + 1 < MAX_BOARD_SIZE)
+    this->enemyHeatmapThisRound[row + 1][col] = 0;
+  if (col + 1 < MAX_BOARD_SIZE)
+    this->enemyHeatmapThisRound[row][col + 1] = 0;
 }
 
 void AIPlayer::missShot(int row, int col) {
-    //this->lastShotWasHit = false;
-    this->enemyHeatmapThisRound[row][col] = -10;
-    if (row - 1 > -1)
-        this->enemyHeatmapThisRound[row - 1][col] -= 1;
-    if (col - 1 > -1)
-        this->enemyHeatmapThisRound[row][col - 1] -= 1;
-    if (row + 1 < MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row + 1][col] -= 1;
-    if (col + 1 < MAX_BOARD_SIZE)
-        this->enemyHeatmapThisRound[row][col + 1] -= 1;
+  //this->lastShotWasHit = false;
+  this->enemyHeatmapThisRound[row][col] = -10;
+  if (row - 1 > -1)
+    this->enemyHeatmapThisRound[row - 1][col] -= 1;
+  if (col - 1 > -1)
+    this->enemyHeatmapThisRound[row][col - 1] -= 1;
+  if (row + 1 < MAX_BOARD_SIZE)
+    this->enemyHeatmapThisRound[row + 1][col] -= 1;
+  if (col + 1 < MAX_BOARD_SIZE)
+    this->enemyHeatmapThisRound[row][col + 1] -= 1;
 }
 
 void AIPlayer::updateHeatMap(int row, int col) {
@@ -225,8 +230,8 @@ void AIPlayer::updateHeatMap(int row, int col) {
 
 }
 
-Location AIPlayer::getRandomLocation(){
-  while(true) {
+Location AIPlayer::getRandomLocation() {
+  while (true) {
     Location loc;
     loc.row = random() % MAX_BOARD_SIZE;
     loc.col = random() % MAX_BOARD_SIZE;
@@ -235,108 +240,179 @@ Location AIPlayer::getRandomLocation(){
   }
 }
 
-int* AIPlayer::findNearestValidNeighbors(int row, int col){
-  int* neighbors = malloc(sizeof(int) * 4);
-  
+Neighbors AIPlayer::findNearestValidNeighbors(int row, int col) {
+  Neighbors neighbors;
 
+  if (row + 1 < MAX_BOARD_SIZE && board[row][col] != WATER) {
+    Location loc;
+    loc.row = row + 1;
+    loc.col = col;
+    neighbors.data[0] = loc;
+  }
+  if (row - 1 > -1 && board[row][col] != WATER) {
+    Location loc;
+    loc.row = row - 1;
+    loc.col = col;
+    neighbors.data[1] = loc;
+  }
+  if (col + 1 < MAX_BOARD_SIZE && board[row][col] != WATER) {
+    Location loc;
+    loc.row = row;
+    loc.col = col + 1;
+    neighbors.data[2] = loc;
+  }
+  if (col - 1 > -1 && board[row][col] != WATER) {
+    Location loc;
+    loc.row = row;
+    loc.col = col - 1;
+    neighbors.data[3] = loc;
+  }
   return neighbors;
 }
 
 void AIPlayer::markShip(int row, int col, int direction, int length) {
-    if (direction == 1) {
-        for (int i = col; i < (col + length); i++) {
-            this->myShipBoard[row][i] = SHIP;
-        }
-    } else {
-        if (direction == 2) {
-            for (int i = row; i < (row + length); i++) {
-                this->myShipBoard[i][col] = SHIP;
-            }
-        }
+  if (direction == 1) {
+    for (int i = col; i < (col + length); i++) {
+      this->myShipBoard[row][i] = SHIP;
     }
+  } else {
+    if (direction == 2) {
+      for (int i = row; i < (row + length); i++) {
+        this->myShipBoard[i][col] = SHIP;
+      }
+    }
+  }
 }
 
 bool AIPlayer::canPlaceShip(int row, int col, int direction, int length) {
-    if (direction == 1) {
-        if ((col + length) >= MAX_BOARD_SIZE) {
-            return false;
-        } else {
-            for (int i = col; i < (col + length); i++) {
-                if (this->myShipBoard[row][i] == SHIP)
-                    return false;
-            }
-        }
+  if (direction == 1) {
+    if ((col + length) >= MAX_BOARD_SIZE) {
+      return false;
     } else {
-        if ((row + length) >= MAX_BOARD_SIZE) {
-            return false;
-        } else {
-            for (int i = row; i < (row + length); i++) {
-                if (this->myShipBoard[i][col] == SHIP)
-                    return false;
-            }
-        }
+      for (int i = col; i < (col + length); i++) {
+        if (this->myShipBoard[row][i] == SHIP)
+          return false;
+      }
     }
-    return true;
+  } else {
+    if ((row + length) >= MAX_BOARD_SIZE) {
+      return false;
+    } else {
+      for (int i = row; i < (row + length); i++) {
+        if (this->myShipBoard[i][col] == SHIP)
+          return false;
+      }
+    }
+  }
+  return true;
 }
 
 bool AIPlayer::isValidMove(int row, int col) {
-    if (board[row][col] == WATER && (row < MAX_BOARD_SIZE) && (col < MAX_BOARD_SIZE)) {
-        return true;
-    } else {
-        return false;
-    }
+  if (row == NULL || col == NULL)
+    return false;
+
+  if ((this->board[row][col] == WATER) && (row < MAX_BOARD_SIZE) && (col < MAX_BOARD_SIZE) && (row > -1) &&
+      (col > -1)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 Location AIPlayer::findMax() {
   Location loc;
-    int localMax = -1000;
-    for (int r = 0; r < MAX_BOARD_SIZE; r++) {
-        for (int c = 0; c < MAX_BOARD_SIZE; c++) {
-            if ((this->calculateWeightedAverage(r, c) > localMax) && board[r][c] == WATER) {
-                localMax = calculateWeightedAverage(r, c);
-                loc.row = r;
-                loc.col = c;
-            }
-        }
+  int localMax = -1000;
+  for (int r = 0; r < MAX_BOARD_SIZE; r++) {
+    for (int c = 0; c < MAX_BOARD_SIZE; c++) {
+      if ((this->calculateWeightedAverage(r, c) > localMax) && board[r][c] == WATER) {
+        localMax = calculateWeightedAverage(r, c);
+        loc.row = r;
+        loc.col = c;
+      }
     }
-    return loc;
+  }
+  return loc;
+}
+
+void AIPlayer::getDirectionForAttack(int lastRow, int lastCol, int currentRow, int currentCol) {
+  if (lastRow == currentRow) {
+    attackDirection = Horizontal;
+  } else {
+    if (lastCol == currentCol) {
+      attackDirection = Vertical;
+    } else {
+      mode = HUNT;
+    }
+  }
 }
 
 Message AIPlayer::getMove() {
 
-  if(mode == HUNT) {
+  if (mode == HUNT) {
     while (true) {
       Location loc = this->getRandomLocation();
 
       if (this->isValidMove(loc.row, loc.col)) {
-        lastRow = loc.row;
-        lastCol = loc.col;
         Message result(SHOT, loc.row, loc.col, "Bang", None, 1);
         return result;
       }
     }
   } else {
-    //find nearest neighbors
+    if (mode == TARGET) {
+      Neighbors neighbors = findNearestValidNeighbors(lastRow, lastCol);
+      int i = 0;
 
+      while (true) {
+        if (this->isValidMove(neighbors.data[i].row, neighbors.data[i].col)) {
+          Message result(SHOT, neighbors.data[i].row, neighbors.data[i].col, "Bang", None, 1);
+          return result;
+        }
+        i++;
+      }
+    } else {
+      if (mode == ATTACKING) {
+        if (attackDirection == Horizontal) {
+          if(this->isValidMove(lastRow, lastCol - 1)){
+            Message result(SHOT, lastRow, lastCol - 1, "Bang", None, 1);
+            return result;
+          } else {
+            if(this->isValidMove(lastRow, lastCol + 1)){
+              Message result(SHOT, lastRow, lastCol + 1, "Bang", None, 1);
+              return result;
+            }
+          }
+        } else {
+          if(this->isValidMove(lastRow - 1, lastCol)){
+            Message result(SHOT, lastRow - 1, lastCol, "Bang", None, 1);
+            return result;
+          } else {
+            if(this->isValidMove(lastRow + 1, lastCol)){
+              Message result(SHOT, lastRow + 1, lastCol, "Bang", None, 1);
+              return result;
+            }
+          }
+        }
+      }
+    }
   }
 }
 
 int AIPlayer::calculateWeightedAverage(int row, int col) {
-    return (this->enemyHeatmapThisRound[row][col] * 2) +
-           (this->enemyHeatmapThisGame[row][col] * 1) +
-           (this->searchPatternHeatmap[row][col] * 1);
+  return (this->enemyHeatmapThisRound[row][col] * 2) +
+         (this->enemyHeatmapThisGame[row][col] * 1) +
+         (this->searchPatternHeatmap[row][col] * 1);
 }
 
 void AIPlayer::newRound() {
-    /* DumbPlayer is too simple to do any inter-round learning. Smarter players
-     * reinitialize any round-specific data structures here.
-     */
-    this->lastRow = 0;
-    this->lastCol = -1;
-    this->numShipsPlaced = 0;
-    this->mode = HUNT;
+  /* DumbPlayer is too simple to do any inter-round learning. Smarter players
+   * reinitialize any round-specific data structures here.
+   */
+  this->lastRow = 0;
+  this->lastCol = -1;
+  this->numShipsPlaced = 0;
+  this->mode = HUNT;
 
-    this->initializeBoard();
+  this->initializeBoard();
 }
 
 Message AIPlayer::placeShip(int length) {
@@ -408,7 +484,17 @@ void AIPlayer::update(Message msg) {
   switch (msg.getMessageType()) {
     case HIT:
       this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
+      if (this->mode == HUNT) {
+        this->firstHitRow = msg.getRow();
+        this->firstHitCol = msg.getCol();
+      }
       this->mode = TARGET;
+      if (this->board[lastRow][lastCol] == HIT) {
+        this->mode = ATTACKING;
+        this->getDirectionForAttack(lastRow, lastCol, msg.getRow(), msg.getCol());
+      }
+      this->lastRow = msg.getRow();
+      this->lastCol = msg.getCol();
       break;
     case KILL:
       this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
@@ -416,7 +502,6 @@ void AIPlayer::update(Message msg) {
       break;
     case MISS:
       this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
-      this->mode = HUNT;
       break;
     case WIN:
     case LOSE:

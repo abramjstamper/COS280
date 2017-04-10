@@ -37,6 +37,8 @@ private:
 
     typedef struct Location Location;
 
+    typedef struct Neighbors Neighbors;
+
     void initializeBoard();
 
     void copyEnemyShipLocation();
@@ -65,7 +67,14 @@ private:
 
     Location getRandomLocation();
 
+    Neighbors findNearestValidNeighbors(int row, int col);
+
+    void getDirectionForAttack(int lastRow, int lastCol, int currentRow, int CurrentCol);
+
     int mode;
+    int attackDirection;
+    int firstHitRow;
+    int firstHitCol;
     int lastRow;
     int lastCol;
     int numShipsPlaced;
@@ -75,7 +84,6 @@ private:
     int enemyHeatmapThisGame[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     char myShipBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
-    int buffer[3];
 };
 
 #endif
