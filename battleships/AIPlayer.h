@@ -47,10 +47,6 @@ private:
 
     void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]);
 
-    void addShot(int row, int col);
-
-    void missShot(int row, int col);
-
     bool danglingHit();
 
     Location getDanglingHitLocation();
