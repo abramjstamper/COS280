@@ -466,6 +466,7 @@ Message AIPlayer::getMove() {
           Location target;
           if (this->danglingHit()) {
             target = getDanglingHitLocation();
+            //TODO: Set the target for the nearest neighbors
           } else {
             target = this->getTargetLocation();
           }
