@@ -51,6 +51,10 @@ private:
 
     void missShot(int row, int col);
 
+    bool danglingHit();
+
+    Location getDanglingHitLocation();
+
     void resetAfterKill(int row, int col);
 
     bool canPlaceShip(int row, int col, int direction, int length);
