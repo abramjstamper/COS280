@@ -85,6 +85,7 @@ private:
     int firstHitCol;
     int lastRow;
     int lastCol;
+    int attackPatternAcc;
     int numShipsPlaced;
     int shipSizes[6];
     int searchPatternHeatmap[MAX_BOARD_SIZE][MAX_BOARD_SIZE];

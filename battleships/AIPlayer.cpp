@@ -26,6 +26,7 @@ typedef struct Location {
     int col;
 } Location;
 
+static Location attackPattern[32];
 typedef struct Neighbors {
     Location data[4];
 } Neighbors;
@@ -33,7 +34,7 @@ typedef struct Neighbors {
 enum Mode {
     HUNT = 1, TARGET = 2, ATTACKING = 3
 };
-
+int attackPatternAcc = 0;
 /**
  * @brief Constructor that initializes any inter-round data structures.
  * @param boardSize Indication of the size of the board that is in use.
@@ -52,20 +53,8 @@ AIPlayer::AIPlayer(int boardSize)
         }
     }
 
-    static int searchPatternHeatmap1[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = {
-            {1, 0, 1, 0, 1, 0, 1, 0, 1, 0},
-            {0, 2, 0, 2, 0, 2, 0, 2, 0, 1},
-            {1, 0, 3, 0, 3, 0, 3, 0, 2, 0},
-            {0, 2, 0, 4, 0, 4, 0, 3, 0, 1},
-            {1, 0, 3, 0, 5, 0, 4, 0, 2, 0},
-            {0, 2, 0, 4, 0, 5, 0, 3, 0, 1},
-            {1, 0, 3, 0, 4, 0, 4, 0, 2, 0},
-            {0, 2, 0, 3, 0, 3, 0, 3, 0, 1},
-            {1, 0, 2, 0, 2, 0, 2, 0, 2, 0},
-            {0, 1, 0, 1, 0, 1, 0, 1, 0, 1}
-    };
 
-    memcpy(searchPatternHeatmap, searchPatternHeatmap1, MAX_BOARD_SIZE * MAX_BOARD_SIZE * sizeof(int));
+
 }
 
 AIPlayer::~AIPlayer() {}
@@ -444,17 +433,99 @@ Location AIPlayer::getDanglingHitLocation() {
     }
 }
 
+//Pattern Attacking
+//Location loc = attackPattern[attackPatternAcc];
+//if (isValidMove(loc.row,loc.col)){
+//Message result(SHOT, loc.row, loc.col, "Bang", None, 1);
+//}
+//attackPatternAcc++;
+
+//Random Attacking
+//Location loc = this->getRandomLocation();
+//if (this->isValidMove(loc.row, loc.col)) {
+//Message result(SHOT, loc.row, loc.col, "Bang", None, 1);
+//return result;
+//}
 
 Message AIPlayer::getMove() {
 
+    static Location attackPattern[32];
+    Location loc;
+    loc.row = 3;loc.col = 5;
+    attackPattern[0] = loc;
+    loc.row = 4;loc.col = 4;
+    attackPattern[1] = loc;
+    loc.row = 5;loc.col = 3;
+    attackPattern[2] = loc;
+    loc.row = 5;loc.col = 6;
+    attackPattern[3] = loc;
+    loc.row = 6;loc.col = 5;
+    attackPattern[4] = loc;
+    loc.row = 0;loc.col = 5;
+    attackPattern[5] = loc;
+    loc.row = 4;loc.col = 1;
+    attackPattern[6] = loc;
+    loc.row = 3;loc.col = 2;
+    attackPattern[7] = loc;
+    loc.row = 7;loc.col = 4;
+    attackPattern[8] = loc;
+    loc.row = 8;loc.col = 3;
+    attackPattern[9] = loc;
+    loc.row = 9;loc.col = 2;
+    attackPattern[10] = loc;
+    loc.row = 8;loc.col = 9;
+    attackPattern[11] = loc;
+    loc.row = 9;loc.col = 8;
+    attackPattern[12] = loc;
+    loc.row = 0;loc.col = 2;
+    attackPattern[13] = loc;
+    loc.row = 1;loc.col = 1;
+    attackPattern[14] = loc;
+    loc.row = 2;loc.col = 0;
+    attackPattern[15] = loc;
+    loc.row = 2;loc.col = 9;
+    attackPattern[16] = loc;
+    loc.row = 3;loc.col = 8;
+    attackPattern[17] = loc;
+    loc.row = 4;loc.col = 7;
+    attackPattern[18] = loc;
+    loc.row = 6;loc.col = 2;
+    attackPattern[19] = loc;
+    loc.row = 7;loc.col = 1;
+    attackPattern[20] = loc;
+    loc.row = 8;loc.col = 0;
+    attackPattern[21] = loc;
+    loc.row = 3;loc.col = 2;
+    attackPattern[22] = loc;
+    loc.row = 4;loc.col = 1;
+    attackPattern[23] = loc;
+    loc.row = 5;loc.col = 0;
+    attackPattern[24] = loc;
+    loc.row = 7;loc.col = 7;
+    attackPattern[25] = loc;
+    loc.row = 8;loc.col = 6;
+    attackPattern[26] = loc;
+    loc.row = 9;loc.col = 5;
+    attackPattern[27] = loc;
+    loc.row = 0;loc.col = 8;
+    attackPattern[28] = loc;
+    loc.row = 1;loc.col = 7;
+    attackPattern[29] = loc;
+    loc.row = 2;loc.col = 6;
+    attackPattern[30] = loc;
+    loc.row = 5;loc.col = 9;
+    attackPattern[31] = loc;
+    loc.row = 6;loc.col = 8;
+    attackPattern[32] = loc;
+
     if (mode == HUNT) {
         while (true) {
-            Location loc = this->getRandomLocation();
-
-            if (this->isValidMove(loc.row, loc.col)) {
+            Location loc = attackPattern[this->attackPatternAcc];
+            if (isValidMove(loc.row, loc.col)) {
                 Message result(SHOT, loc.row, loc.col, "Bang", None, 1);
                 return result;
             }
+            this->attackPatternAcc++;
         }
     } else {
         if (mode == TARGET) {
@@ -470,11 +541,11 @@ Message AIPlayer::getMove() {
                     return result;
                 } else {
                     Location DHLocation;
-                    if(this->danglingHit()){
+                    if (this->danglingHit()) {
                         DHLocation = getDanglingHitLocation();
-                        printf("\n\n\n\n\n\n\n\nblahblahblah\n%i %i", DHLocation.row,DHLocation.col );
+//                        printf("\n\n\n\n\n\n\n\nblahblahblah\n%i %i", DHLocation.row,DHLocation.col );
                     }
-                    printf("\n\n\n\n\n\n\n\nblahblahblah\n%i %i", DHLocation.row,DHLocation.col );
+//                    printf("\n\n\n\n\n\n\n\nblahblahblah\n%i %i", DHLocation.row,DHLocation.col );
 
                     Location target = this->getTargetLocation();
                     Message result(SHOT, target.row, target.col, "Bang", None, 1);
@@ -499,7 +570,7 @@ void AIPlayer::newRound() {
     this->lastCol = 0;
     this->numShipsPlaced = 0;
     this->mode = HUNT;
-
+    this->attackPatternAcc = 0;
     this->initializeBoard();
 }
 
