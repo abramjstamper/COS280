@@ -122,25 +122,25 @@ Location AIPlayer::getRandomLocation() {
 Neighbors AIPlayer::findNearestValidNeighbors(int row, int col) {
   Neighbors neighbors;
 
-  if ((row + 1 < MAX_BOARD_SIZE) && board[row][col] != WATER) {
+  if ((row + 1 < MAX_BOARD_SIZE) && board[row + 1][col] == WATER) {
     Location loc;
     loc.row = row + 1;
     loc.col = col;
     neighbors.data[0] = loc;
   }
-  if ((row - 1 > -1) && board[row][col] != WATER) {
+  if ((row - 1 > -1) && board[row - 1][col] == WATER) {
     Location loc;
     loc.row = row - 1;
     loc.col = col;
     neighbors.data[1] = loc;
   }
-  if ((col + 1 < MAX_BOARD_SIZE) && board[row][col] != WATER) {
+  if ((col + 1 < MAX_BOARD_SIZE) && board[row][col + 1] == WATER) {
     Location loc;
     loc.row = row;
     loc.col = col + 1;
     neighbors.data[2] = loc;
   }
-  if ((col - 1 > -1) && board[row][col] != WATER) {
+  if ((col - 1 > -1) && board[row][col - 1] == WATER) {
     Location loc;
     loc.row = row;
     loc.col = col - 1;
@@ -465,8 +465,16 @@ Message AIPlayer::getMove() {
         } else {
           Location target;
           if (this->danglingHit()) {
+            int i = 0;
             target = getDanglingHitLocation();
-            //TODO: Set the target for the nearest neighbors
+            Neighbors neighbor = this->findNearestValidNeighbors(target.row, target.col);
+            while (true) {
+              if (isValidMove(neighbor.data[i].row, neighbor.data[i].col)) {
+                Message result(SHOT, neighbor.data[i].row, neighbor.data[i].col, "Bang", None, 1);
+                return result;
+              }
+              i++;
+            }
           } else {
             target = this->getTargetLocation();
           }
@@ -580,6 +588,8 @@ void AIPlayer::update(Message msg) {
     case KILL:
       this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
       this->mode = HUNT;
+      if(this->danglingHit())
+        this->mode = ATTACKING;
       break;
     case MISS:
       this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
