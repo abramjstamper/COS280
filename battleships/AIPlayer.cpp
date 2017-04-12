@@ -222,8 +222,8 @@ void AIPlayer::getDirectionForAttack(int lastRow, int lastCol, int currentRow, i
   }
 }
 
-Location AIPlayer::getTargetLocation() {
-  Neighbors neighbors = findNearestValidNeighbors(lastRow, lastCol);
+Location AIPlayer::getTargetLocation(int row, int col) {
+  Neighbors neighbors = findNearestValidNeighbors(row, col);
   int i = 0;
 
   while (true) {
@@ -452,7 +452,7 @@ Message AIPlayer::getMove() {
     }
   } else {
     if (mode == TARGET) {
-      Location target = this->getTargetLocation();
+      Location target = this->getTargetLocation(lastRow, lastCol);
       Message result(SHOT, target.row, target.col, "Bang", None, 1);
       return result;
     } else {
@@ -465,18 +465,10 @@ Message AIPlayer::getMove() {
         } else {
           Location target;
           if (this->danglingHit()) {
-            int i = 0;
-            target = getDanglingHitLocation();
-            Neighbors neighbor = this->findNearestValidNeighbors(target.row, target.col);
-            while (true) {
-              if (isValidMove(neighbor.data[i].row, neighbor.data[i].col)) {
-                Message result(SHOT, neighbor.data[i].row, neighbor.data[i].col, "Bang", None, 1);
-                return result;
-              }
-              i++;
-            }
+            target = this->getDanglingHitLocation();
+            target = this->getTargetLocation(target.row, target.col);
           } else {
-            target = this->getTargetLocation();
+            target = this->getTargetLocation(lastRow, lastCol);
           }
           Message result(SHOT, target.row, target.col, "Bang", None, 1);
           return result;

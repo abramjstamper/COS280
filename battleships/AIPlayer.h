@@ -61,7 +61,7 @@ private:
 
     Location getAttackingLocation();
 
-    Location getTargetLocation();
+    Location getTargetLocation(int row, int col);
 
     Location findMax();
 
