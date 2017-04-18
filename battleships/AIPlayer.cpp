@@ -121,6 +121,13 @@ Location AIPlayer::getRandomLocation() {
 
 Neighbors AIPlayer::findNearestValidNeighbors(int row, int col) {
   Neighbors neighbors;
+  Location loc;
+  loc.row = 0;
+  loc.col = 0;
+  neighbors.data[0] = loc;
+  neighbors.data[1] = loc;
+  neighbors.data[2] = loc;
+  neighbors.data[3] = loc;
 
   if ((row + 1 < MAX_BOARD_SIZE) && board[row + 1][col] == WATER) {
     Location loc;
@@ -128,17 +135,17 @@ Neighbors AIPlayer::findNearestValidNeighbors(int row, int col) {
     loc.col = col;
     neighbors.data[0] = loc;
   }
-  if ((row - 1 > -1) && board[row - 1][col] == WATER) {
-    Location loc;
-    loc.row = row - 1;
-    loc.col = col;
-    neighbors.data[1] = loc;
-  }
   if ((col + 1 < MAX_BOARD_SIZE) && board[row][col + 1] == WATER) {
     Location loc;
     loc.row = row;
     loc.col = col + 1;
     neighbors.data[2] = loc;
+  }
+  if ((row - 1 > -1) && board[row - 1][col] == WATER) {
+    Location loc;
+    loc.row = row - 1;
+    loc.col = col;
+    neighbors.data[1] = loc;
   }
   if ((col - 1 > -1) && board[row][col - 1] == WATER) {
     Location loc;
@@ -146,6 +153,7 @@ Neighbors AIPlayer::findNearestValidNeighbors(int row, int col) {
     loc.col = col - 1;
     neighbors.data[3] = loc;
   }
+
   return neighbors;
 }
 
@@ -227,7 +235,7 @@ Location AIPlayer::getTargetLocation(int row, int col) {
   int i = 0;
 
   while (true) {
-    if (this->isValidMove(neighbors.data[i].row, neighbors.data[i].col)) {
+    if (this->isValidMove(neighbors.data[i].row, neighbors.data[i].col) && this->goodShot(neighbors.data[i])) {
       Location result;
       result.row = neighbors.data[i].row;
       result.col = neighbors.data[i].col;
@@ -337,6 +345,53 @@ Location AIPlayer::getDanglingHitLocation() {
 //return result;
 //}
 
+bool AIPlayer::goodShot(Location loc){
+  if(isValidMove(loc.row, loc.col) && board[loc.row][loc.col] != WATER) return false;
+
+  int vertShots = 1;
+  int horzShots = 1;
+
+  for(int r = loc.row - 1; r >= 0; r--){
+    if (board[r][loc.col] == MISS || board[r][loc.col] == KILL){
+      break;
+    } else {
+      vertShots++;
+    }
+  }
+
+  for(int r = loc.row + 1; r < MAX_BOARD_SIZE; r++){
+    if(board[r][loc.col] == MISS || board[r][loc.col] == KILL){
+      break;
+    } else {
+      vertShots++;
+    }
+  }
+
+  for(int c = loc.col - 1; c >= 0; c--){
+    if(board[loc.row][c] == MISS || board[loc.row][c] == KILL){
+      break;
+    } else {
+      horzShots++;
+    }
+  }
+
+  for(int c = loc.col + 1; c < MAX_BOARD_SIZE; c++){
+    if(board[loc.row][c] == MISS || board[loc.row][c] == KILL){
+      break;
+    } else {
+      horzShots++;
+    }
+  }
+
+  if(vertShots >= 3){
+    return true;
+  }
+  if(horzShots >= 3){
+    return true;
+  }
+  return false;
+}
+
 Message AIPlayer::getMove() {
 
   static Location attackPattern[32];
@@ -444,9 +499,11 @@ Message AIPlayer::getMove() {
   if (mode == HUNT) {
     while (true) {
       Location loc = attackPattern[this->attackPatternAcc];
-      if (isValidMove(loc.row, loc.col)) {
-        Message result(SHOT, loc.row, loc.col, "Bang", None, 1);
-        return result;
+      if(goodShot(loc)){
+        if (isValidMove(loc.row, loc.col)) {
+          Message result(SHOT, loc.row, loc.col, "Bang", None, 1);
+          return result;
+        }
       }
       this->attackPatternAcc++;
     }
@@ -468,7 +525,7 @@ Message AIPlayer::getMove() {
             target = this->getDanglingHitLocation();
             target = this->getTargetLocation(target.row, target.col);
           } else {
-            target = this->getTargetLocation(lastRow, lastCol);
+            target = this->getTargetLocation(firstHitRow, firstHitCol);
           }
           Message result(SHOT, target.row, target.col, "Bang", None, 1);
           return result;
@@ -585,6 +642,8 @@ void AIPlayer::update(Message msg) {
       break;
     case MISS:
       this->board[msg.getRow()][msg.getCol()] = msg.getMessageType();
+      if(this->danglingHit())
+        this->mode = ATTACKING;
       break;
     case WIN:
     case LOSE:

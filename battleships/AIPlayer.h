@@ -41,6 +41,8 @@ private:
 
     void initializeBoard();
 
+    bool goodShot(Location shot);
+
     void copyEnemyShipLocation();
 
     void printBoard(int board[MAX_BOARD_SIZE][MAX_BOARD_SIZE]);
