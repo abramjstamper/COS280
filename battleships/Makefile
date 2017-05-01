@@ -1,8 +1,8 @@
-CXXFLAGS = -g -Wall -O2
-CXX = gcc-6
+CXXFLAGS = -Wall -O0 -g
+CXX = g++
 
 CONTESTOBJECTS = AIContest.o BoardV3.o Message.o PlayerV2.o conio.o contest.o \
-	DumbPlayerV2.o CleanPlayerV2.o OrigGamblerPlayerV2.o LearningGambler2.o
+	AIPlayer.o CleanPlayerV2.o OrigGamblerPlayerV2.o LearningGambler2.o
 
 contest: $(CONTESTOBJECTS)
 	gcc-6 -o contest $(CONTESTOBJECTS)
@@ -28,8 +28,8 @@ AIContest.o: AIContest.cpp
 AIContest.cpp: AIContest.h Message.h defines.h
 
 # Players here
-DumbPlayerV2.o: DumbPlayerV2.cpp Message.h
-DumbPlayerV2.cpp: DumbPlayerV2.h defines.h PlayerV2.h conio.cpp
+AIPlayer.o: AIPlayer.cpp Message.h
+AIPlayer.cpp: AIPlayer.h defines.h PlayerV2.h conio.cpp
 
 # CleanPlayerV2.o and other provided binaries are only available as a linkable Linux binary, not as source code.
 CleanPlayerV2.o: 
@@ -40,4 +40,3 @@ LearningGambler2.o:
 	tar -xvf binaries.tar LearningGambler2.o
 BoardV3.o:
 	tar -xvf binaries.tar BoardV3.o
-
