@@ -24,9 +24,16 @@ def scoreSolution(perm):
 	students = [True, True, True, False, True, False]
 	score = 0
 	for i in range(6):
+		subscore = 0
 		for j in range(len(perm)):
 			if(perm[j] == "T" and students[i]):
-				score += 1	
+				subscore += 1
+			elif(perm[j] == "F" and not (students[i])):
+				subscore += 1
+			elif(perm[j] == "#"):
+				subscore += 1
+		if(subscore == 4):
+			score += 1
 	print(perm, end="")
 	print(" - " + str(score))
 	
@@ -60,7 +67,7 @@ def mutate(previousPerms):
   
 def checkIfDone(perms, scores):
   for i in range(len(scores)):
-    if(scores[i] > 20):
+    if(scores[i] == 6):
     	return True
   return False
   
