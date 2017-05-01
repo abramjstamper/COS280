@@ -5,7 +5,7 @@ CONTESTOBJECTS = AIContest.o BoardV3.o Message.o PlayerV2.o conio.o contest.o \
 	DumbPlayerV2.o CleanPlayerV2.o OrigGamblerPlayerV2.o LearningGambler2.o
 
 contest: $(CONTESTOBJECTS)
-	g++ -o contest $(CONTESTOBJECTS)
+	gcc-6 -o contest $(CONTESTOBJECTS)
 	@echo "Contest binary is in 'contest'. Run as './contest'"
 
 clean:
